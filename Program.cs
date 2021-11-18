@@ -26,15 +26,18 @@ namespace consoleApplication
                 Console.WriteLine("Unable to connect.");
             }
 
+            var apps = AsyncHelper.RunTask(() => onspringClient.GetAppsAsync());
+
+            Console.WriteLine(apps.Value);
+            
+
+            /*
             const string breakingBadBaseUrl = "https://www.breakingbadapi.com/api/";
-            var breakingBadApi = new BreakingBadHelper(breakingBadBaseUrl);
-            var request = new RestRequest("characters");
-
-            var response = breakingBadApi.GetCharacters();
-
-            var print = JsonConvert.DeserializeObject(response.Content);
+            var breakingBadApi = new BreakingBadHelper(breakingBadBaseUrl);;
+            var print = breakingBadApi.GetACharacter();
 
             Console.WriteLine(print);
+            */
         }
     }
 }
