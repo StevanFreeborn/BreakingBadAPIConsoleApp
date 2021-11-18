@@ -13,7 +13,17 @@ namespace consoleApplication
 		{
 			_client = new RestClient(apiUrl);
 		}
-
+		public bool CanConnect()
+        {
+			var request = new RestRequest();
+			var response = _client.Get(request);
+			var status = response.IsSuccessful;
+			if (status)
+            {
+				return true;
+            }
+			return false;
+        }
 		public BreakingBadCharacter[] GetAllCharacters()
         {
 			var request = new RestRequest("characters");
