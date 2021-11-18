@@ -14,20 +14,21 @@ namespace consoleApplication
 			_client = new RestClient(apiUrl);
 		}
 
-		public object GetAllCharacters()
+		public BreakingBadCharacter[] GetAllCharacters()
         {
 			var request = new RestRequest("characters");
 			var response = _client.Get(request);
-			var thing = JsonConvert.DeserializeObject<object>(response.Content);
-			return thing;
+			var characters = JsonConvert.DeserializeObject<BreakingBadCharacter[]>(response.Content);
+			return characters;
         }
-		public object GetACharacter()
+		public BreakingBadCharacter[] GetACharacter(int num)
         {
-			var endPoint = "character/1";
+			var charId = num.ToString();
+			var endPoint = "characters/" + charId;
 			var request = new RestRequest(endPoint);
 			var response = _client.Get(request);
-			var thing = JsonConvert.DeserializeObject<object>(response.Content);
-			return thing;
+			var character = JsonConvert.DeserializeObject<BreakingBadCharacter[]>(response.Content);
+			return character;
 		}
 	}
 }
