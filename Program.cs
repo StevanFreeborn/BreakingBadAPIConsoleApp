@@ -29,9 +29,17 @@ namespace consoleApplication
             {
                 Console.WriteLine("Connected successfully.");
             }
+            else if(!onspringCanConnect && breakingBadCanConnect)
+            {
+                Console.WriteLine("Could not connect to the Onspring API.");
+            }
+            else if(onspringCanConnect && !breakingBadCanConnect)
+            {
+                Console.WriteLine("Could not connect to the Breaking Bad API.");
+            }
             else
             {
-                Console.WriteLine("Unable to connect.");
+                Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");
             }
         }
     }
