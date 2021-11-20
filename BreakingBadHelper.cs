@@ -29,7 +29,7 @@ namespace consoleApplication
 		}
 		public BreakingBadCharacter[] GetAllCharacters()
 		{
-			var endPoint = "characters"
+			var endPoint = "characters";
 			var request = new RestRequest(endPoint);
 			var response = _client.Get(request);
 			var characters = JsonConvert.DeserializeObject<BreakingBadCharacter[]>(response.Content);
@@ -72,8 +72,8 @@ namespace consoleApplication
 		}
 		public BreakingBadQuote[] GetQuotesByAuthor(string authorName)
         {
-			var charName = authorName.Replace(" ", "+");
-			var endPoint = "quote?author=" + charName;
+			var authName = authorName.Replace(" ", "+");
+			var endPoint = "quote?author=" + authName;
 			var request = new RestRequest(endPoint);
 			var response = _client.Get(request);
 			var quotes = JsonConvert.DeserializeObject<BreakingBadQuote[]>(response.Content);

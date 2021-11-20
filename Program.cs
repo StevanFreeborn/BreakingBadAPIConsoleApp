@@ -41,6 +41,15 @@ namespace consoleApplication
             {
                 Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");
             }
+
+            Console.WriteLine("Please enter the name of a character who's quotes you'd like to retrieve.");
+            var input = Console.ReadLine();
+            var quotes = breakingBadApi.GetQuotesByAuthor(input);
+
+            foreach (var quote in quotes)
+            {
+                Console.WriteLine(quote.quote);
+            }
         }
     }
 }
