@@ -12,5 +12,10 @@ namespace consoleApplication
         {
             _client = new OnspringClient(baseUrl, apiKey);
         }
+
+        public OnspringCharacter GetCharacterById(BreakingBadCharacter character)
+        {
+            return null;
+        }
     }
 }

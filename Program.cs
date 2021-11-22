@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Configuration;
 using RestSharp;
 using Newtonsoft.Json;
 using Onspring.API.SDK;
 using Onspring.API.SDK.Helpers;
+using Onspring.API.SDK.Enums;
+using Onspring.API.SDK.Models;
 
 namespace consoleApplication
 {
@@ -11,8 +14,8 @@ namespace consoleApplication
         static void Main(string[] args)
         {
             // create onspring api client.
-            const string onspringBaseUrl = "https://api.alpha.onspring.ist";
-            const string apiKey = "61546a78a65cf5787573c39a/2b02fc67-e3c4-4292-8438-201e1ecec61d";
+            var onspringBaseUrl = ConfigurationManager.AppSettings["baseUrl"]; ;
+            var apiKey = ConfigurationManager.AppSettings["apiKey"];
             var onspringClient = new OnspringClient(onspringBaseUrl, apiKey);
             
             // verify connectivity to onspring api.
@@ -41,15 +44,9 @@ namespace consoleApplication
             {
                 Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");
             }
-
-            Console.WriteLine("Please enter the name of a character who's quotes you'd like to retrieve.");
-            var input = Console.ReadLine();
-            var quotes = breakingBadApi.GetQuotesByAuthor(input);
-
-            foreach (var quote in quotes)
-            {
-                Console.WriteLine(quote.quote);
-            }
+            var request = new GetRecordRequest(357,1);
+            var records = AsyncHelper.RunTask(() => onspringClient.GetRecordAsync(request));
+            Console.WriteLine(records);
         }
     }
 }
