@@ -16,10 +16,10 @@ namespace consoleApplication
             // create onspring api client.
             var onspringBaseUrl = ConfigurationManager.AppSettings["baseUrl"]; ;
             var apiKey = ConfigurationManager.AppSettings["apiKey"];
-            var onspringClient = new OnspringClient(onspringBaseUrl, apiKey);
+            var onspringAPI = new OnspringHelper(onspringBaseUrl, apiKey);
             
             // verify connectivity to onspring api.
-            bool onspringCanConnect = AsyncHelper.RunTask(() => onspringClient.CanConnectAsync());
+            bool onspringCanConnect = AsyncHelper.RunTask(() => onspringAPI._client.CanConnectAsync());
             
             // create breaking bad api client.
             const string breakingBadBaseUrl = "https://www.breakingbadapi.com/api/";
@@ -52,7 +52,7 @@ namespace consoleApplication
             Console.WriteLine(JsonConvert.SerializeObject(randomCharacter));
 
             var request = new GetRecordRequest(357,1);
-            var getResponse = AsyncHelper.RunTask(() => onspringClient.GetRecordAsync(request));
+            var getResponse = AsyncHelper.RunTask(() => onspringAPI._client.GetRecordAsync(request));
             var record = getResponse.Value;
         }
     }

@@ -14,6 +14,6 @@ namespace consoleApplication
 		public string[] appearance { get; set; }
 		public string portrayed { get; set; }
 		public string category { get; set; }
-		public string[] better_call_saul_appearance { get; set; }
+		public string better_call_saul_appearance { get; set; }
 	}
 }
