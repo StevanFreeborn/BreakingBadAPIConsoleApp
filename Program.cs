@@ -6,6 +6,8 @@ using Onspring.API.SDK;
 using Onspring.API.SDK.Helpers;
 using Onspring.API.SDK.Enums;
 using Onspring.API.SDK.Models;
+using System.Linq;
+using static Utility;
 
 namespace consoleApplication
 {
@@ -44,9 +46,15 @@ namespace consoleApplication
             {
                 Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");
             }
+
             var request = new GetRecordRequest(357,1);
-            var records = AsyncHelper.RunTask(() => onspringClient.GetRecordAsync(request));
-            Console.WriteLine(records);
+            var getResponse = AsyncHelper.RunTask(() => onspringClient.GetRecordAsync(request));
+            var record = getResponse.Value;
+
+            foreach (var recordFieldValue in record.FieldData)
+            {
+                Console.WriteLine($"FieldId: {recordFieldValue.FieldId}, Type: {recordFieldValue.Type}, Value: {GetResultValueString(recordFieldValue)}");
+            }
         }
     }
 }
