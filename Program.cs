@@ -4,6 +4,7 @@ using Onspring.API.SDK;
 using Onspring.API.SDK.Helpers;
 using Onspring.API.SDK.Enums;
 using Onspring.API.SDK.Models;
+using Newtonsoft.Json;
 using static Utility;
 
 namespace consoleApplication
@@ -44,14 +45,15 @@ namespace consoleApplication
                 Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");
             }
 
+            Console.WriteLine("\n");
+            Console.WriteLine("Retrieving random character from thebreakingbadapi.com.");
+            var randomCharacter = breakingBadApi.GetARandomCharacter();
+            Console.WriteLine("\n");
+            Console.WriteLine(JsonConvert.SerializeObject(randomCharacter));
+
             var request = new GetRecordRequest(357,1);
             var getResponse = AsyncHelper.RunTask(() => onspringClient.GetRecordAsync(request));
             var record = getResponse.Value;
-
-            foreach (var recordFieldValue in record.FieldData)
-            {
-                Console.WriteLine($"FieldId: {recordFieldValue.FieldId}, Type: {recordFieldValue.Type}, Value: {GetResultValueString(recordFieldValue)}");
-            }
         }
     }
 }

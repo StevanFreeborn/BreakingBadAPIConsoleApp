@@ -63,7 +63,7 @@ namespace consoleApplication
 		}
 		public BreakingBadCharacter[] GetARandomCharacter()
 		{
-			var endPoint = "characters/random";
+			var endPoint = "character/random";
 			var request = new RestRequest(endPoint);
 			var response = _client.Get(request);
 			var characters = JsonConvert.DeserializeObject<BreakingBadCharacter[]>(response.Content);
