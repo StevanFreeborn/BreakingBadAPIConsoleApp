@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Configuration;
-using RestSharp;
-using Newtonsoft.Json;
 using Onspring.API.SDK;
 using Onspring.API.SDK.Helpers;
 using Onspring.API.SDK.Enums;
 using Onspring.API.SDK.Models;
-using System.Linq;
 using static Utility;
 
 namespace consoleApplication

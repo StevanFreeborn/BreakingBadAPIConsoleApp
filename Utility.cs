@@ -1,6 +1,4 @@
 ﻿using System;
-using Onspring.API.SDK;
-using Onspring.API.SDK.Helpers;
 using Onspring.API.SDK.Enums;
 using Onspring.API.SDK.Models;
 using System.Linq;
