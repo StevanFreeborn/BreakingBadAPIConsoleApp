@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Collections.Generic;
 using Onspring.API.SDK;
 using Onspring.API.SDK.Helpers;
 using Onspring.API.SDK.Enums;
@@ -51,9 +52,11 @@ namespace consoleApplication
             Console.WriteLine("\n");
             Console.WriteLine(JsonConvert.SerializeObject(randomCharacter));
 
-            var request = new GetRecordRequest(357,1);
-            var getResponse = AsyncHelper.RunTask(() => onspringAPI._client.GetRecordAsync(request));
-            var record = getResponse.Value;
+            var character = onspringAPI.GetCharacterById("1");
+            Console.WriteLine(JsonConvert.SerializeObject(character));
+
+            var occupation = onspringAPI.GetOccupationByRecordId("Test");
+            Console.WriteLine(JsonConvert.SerializeObject(occupation));
         }
     }
 }
