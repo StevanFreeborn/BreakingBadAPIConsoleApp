@@ -29,33 +29,30 @@ namespace consoleApplication
             // verify connectivity to breaking bad api.
             bool breakingBadCanConnect = breakingBadApi.CanConnect();
 
-            if(onspringCanConnect && breakingBadCanConnect)
-            {
-                Console.WriteLine("Connected successfully.");
-            }
-            else if(!onspringCanConnect && breakingBadCanConnect)
-            {
-                Console.WriteLine("Could not connect to the Onspring API.");
-            }
-            else if(onspringCanConnect && !breakingBadCanConnect)
-            {
-                Console.WriteLine("Could not connect to the Breaking Bad API.");
-            }
-            else
-            {
-                Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");
-            }
+            if(onspringCanConnect && breakingBadCanConnect) { Console.WriteLine("Connected successfully."); }
+            
+            else if(!onspringCanConnect && breakingBadCanConnect) { Console.WriteLine("Could not connect to the Onspring API."); }
+            
+            else if(onspringCanConnect && !breakingBadCanConnect) { Console.WriteLine("Could not connect to the Breaking Bad API."); }
+            
+            else { Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");}
 
             Console.WriteLine("\n");
+
             Console.WriteLine("Retrieving random character from thebreakingbadapi.com.");
+            
             var randomBreakingBadCharacters = breakingBadApi.GetARandomCharacter();
+            
             Console.WriteLine("\n");
+
             Console.WriteLine(JsonConvert.SerializeObject(randomBreakingBadCharacters, Formatting.Indented));
+            
             if (randomBreakingBadCharacters != null && randomBreakingBadCharacters.Length > 0)
             {
                 foreach(var breakingBadCharacter in randomBreakingBadCharacters)
                 {
                     var onspringCharacter = onspringAPI.GetCharacterById(breakingBadCharacter.char_id.ToString());
+
                     if(onspringCharacter != null)
                     {
                         Console.WriteLine("Found {0} (id: {1} record id:{2}) in Onspring.", onspringCharacter.name, onspringCharacter.id, onspringCharacter.recordId);
