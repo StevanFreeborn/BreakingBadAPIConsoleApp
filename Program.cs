@@ -48,15 +48,24 @@ namespace consoleApplication
 
             Console.WriteLine("\n");
             Console.WriteLine("Retrieving random character from thebreakingbadapi.com.");
-            var randomCharacter = breakingBadApi.GetARandomCharacter();
+            var randomBreakingBadCharacters = breakingBadApi.GetARandomCharacter();
             Console.WriteLine("\n");
-            Console.WriteLine(JsonConvert.SerializeObject(randomCharacter));
-
-            var character = onspringAPI.GetCharacterById("1");
-            Console.WriteLine(JsonConvert.SerializeObject(character));
-
-            var occupation = onspringAPI.GetOccupationByRecordId("Test");
-            Console.WriteLine(JsonConvert.SerializeObject(occupation));
+            Console.WriteLine(JsonConvert.SerializeObject(randomBreakingBadCharacters, Formatting.Indented));
+            if (randomBreakingBadCharacters != null && randomBreakingBadCharacters.Length > 0)
+            {
+                foreach(var breakingBadCharacter in randomBreakingBadCharacters)
+                {
+                    var onspringCharacter = onspringAPI.GetCharacterById(breakingBadCharacter.char_id.ToString());
+                    if(onspringCharacter != null)
+                    {
+                        Console.WriteLine("Found {0} (id: {1} record id:{2}) in Onspring.", onspringCharacter.name, onspringCharacter.id, onspringCharacter.recordId);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Didn't find any character in Onspring with id {0}", breakingBadCharacter.char_id);
+                    }
+                }
+            }
         }
     }
 }
