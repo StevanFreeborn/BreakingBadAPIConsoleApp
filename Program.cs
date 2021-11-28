@@ -63,6 +63,7 @@ namespace consoleApplication
                     else
                     {
                         Console.WriteLine("Didn't find any character in Onspring with id {0}", breakingBadCharacter.char_id);
+                        var occupationRecordIds = onspringAPI.GetOccupationRecordIds(breakingBadCharacter.occupation);
                     }
                 }
             }

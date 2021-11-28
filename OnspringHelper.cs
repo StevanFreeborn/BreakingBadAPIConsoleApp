@@ -46,31 +46,56 @@ namespace consoleApplication
                     throw new ApplicationException("More than one character with id: " + characterId);
             }
         }
-        public OnspringOccupation GetOccupationByRecordId(string occupationName)
+        public List<int?> GetOccupationRecordIds(string[] occupationNames)
         {
-            if (string.IsNullOrEmpty(occupationName))
-            {
-                return null;
-            }
-            var queryRequest = new QueryRecordsRequest()
-            {
-                AppId = _occupationMapper.occupationsAppId,
-                Filter = $"{_occupationMapper.occupationsNameFieldId} eq '{occupationName}'",
-                FieldIds = new List<int> { },
-                DataFormat = DataFormat.Raw,
-            };
-            var queryResponse = AsyncHelper.RunTask(() => _client.QueryRecordsAsync(queryRequest));
-            var records = queryResponse.Value.Items;
+            var occupationRecordIds = new List<int?>();
 
-            switch (records.Count)
+            foreach (var name in occupationNames)
             {
-                case 0:
+                if (string.IsNullOrEmpty(name))
+                {
                     return null;
-                case 1:
-                    return _occupationMapper.LoadOccupation(records[0]);
-                default:
-                    throw new ApplicationException("More than one occupation found with name: " + occupationName);
+                }
+
+                var queryRequest = new QueryRecordsRequest()
+                {
+                    AppId = _occupationMapper.occupationsAppId,
+                    Filter = $"{_occupationMapper.occupationsNameFieldId} eq '{name}'",
+                    FieldIds = new List<int> { },
+                    DataFormat = DataFormat.Raw,
+                };
+
+                var queryResponse = AsyncHelper.RunTask(() => _client.QueryRecordsAsync(queryRequest));
+                var records = queryResponse.Value.Items;
+                if(records.Count > 0)
+                {
+                    var onspringOccupation = _occupationMapper.LoadOccupation(records[0]);
+                    occupationRecordIds.Add(onspringOccupation.recordId);
+                }
+                else
+                {
+                    var onspringOccupation = new OnspringOccupation
+                    {
+                        Name = name,
+                    };
+
+                    var newRecordId = AddNewOnspringOccupation(onspringOccupation);
+                    occupationRecordIds.Add(newRecordId);
+                }
             }
+            return occupationRecordIds;
+        }
+        public int? AddNewOnspringCharacter(OnspringCharacter character)
+        {
+            var record = _characterMapper.GetAddEditCharacterValues(character);
+            var saveResponse = _client.SaveRecordAsync(record);
+            return saveResponse.Result.Value.Id;
+        }
+        public int? AddNewOnspringOccupation(OnspringOccupation occupation)
+        {
+            var record = _occupationMapper.GetAddEditOccupationValues(occupation);
+            var saveResponse = _client.SaveRecordAsync(record);
+            return saveResponse?.Result.Value.Id;
         }
     }
 }
