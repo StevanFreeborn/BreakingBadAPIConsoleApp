@@ -29,22 +29,19 @@ namespace consoleApplication
             // verify connectivity to breaking bad api.
             bool breakingBadCanConnect = breakingBadApi.CanConnect();
 
+            // verify connectivity to breaking bad api and onspring api and log an appropriate response given responses received.
             if(onspringCanConnect && breakingBadCanConnect) { Console.WriteLine("Connected successfully."); }
-            
             else if(!onspringCanConnect && breakingBadCanConnect) { Console.WriteLine("Could not connect to the Onspring API."); }
-            
             else if(onspringCanConnect && !breakingBadCanConnect) { Console.WriteLine("Could not connect to the Breaking Bad API."); }
-            
             else { Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");}
-
             Console.WriteLine("\n");
-
+            
+            // load a random character from thebreakingbadapi.com
             Console.WriteLine("Retrieving random character from thebreakingbadapi.com.");
-            
             var randomBreakingBadCharacters = breakingBadApi.GetARandomCharacter();
-            
             Console.WriteLine("\n");
 
+            // log the character loaded from thebreakingbadapi.com
             Console.WriteLine(JsonConvert.SerializeObject(randomBreakingBadCharacters, Formatting.Indented));
             
             if (randomBreakingBadCharacters != null && randomBreakingBadCharacters.Length > 0)
