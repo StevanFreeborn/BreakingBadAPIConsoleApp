@@ -33,7 +33,7 @@ namespace consoleApplication
             else { Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");}
             Console.WriteLine();
             
-            // load a random character from thebreakingbadapi.com
+            // load characters from thebreakingbadapi.com
             Console.WriteLine("Retrieving characters from thebreakingbadapi.com...");
             // var breakingBadCharacters = breakingBadApi.GetACharacterById(19);
             var breakingBadCharacters = breakingBadApi.GetAllCharacters();
