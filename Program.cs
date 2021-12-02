@@ -77,6 +77,7 @@ namespace consoleApplication
                         {
                             Console.WriteLine("Added {0} in Onspring. (record id {1}) ", onspringCharacter.name, newCharacterRecordId);
                             Console.WriteLine();
+
                         }
                         else
                         {
