@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.Collections;
 using System.Collections.Generic;
 using Onspring.API.SDK;
 using Onspring.API.SDK.Models;
@@ -52,7 +51,7 @@ namespace consoleApplication
                     throw new ApplicationException("More than one character with id: " + characterId);
             }
         }
-        public List<int> GetOccupationRecordIds(List<string> occupationNames)
+        public List<int> GetOccupationsByNameOrAddOccupations(List<string> occupationNames)
         {
             var occupationRecordIds = new List<int>();
 
@@ -94,7 +93,7 @@ namespace consoleApplication
             return occupationRecordIds;
         }
 
-        public List<int> GetSeasonRecordIds(List<string> seasonNames)
+        public List<int> GetSeasonsByNameOrAddSeasons(List<string> seasonNames)
         {
             var seasonRecordIds = new List<int>();
 
@@ -135,7 +134,7 @@ namespace consoleApplication
             }
             return seasonRecordIds;
         }
-        public List<int> GetCategoryRecordIds(string categories)
+        public List<int> GetCategoriesByNameOrAddCategories(string categories)
         {
             var splitCategories = new List<string>(categories.Split(","));
             List<string> trimmedCategories = new List<string>();
@@ -183,7 +182,7 @@ namespace consoleApplication
             }
             return categoryRecordIds;
         }
-        public Guid? GetStatusGuidValue(string status)
+        public Guid? GetStatusGuidValueByNameOrAddStatusListValue(string status)
         {
             var statusFieldId = _characterMapper.charactersStatusFieldId;
             var getFieldResponse = _client.GetFieldAsync(statusFieldId);

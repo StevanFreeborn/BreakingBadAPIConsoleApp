@@ -1,5 +1,4 @@
-﻿using System;
-using System.Configuration;
+﻿using System.Configuration;
 using Onspring.API.SDK.Models;
 
 namespace consoleApplication

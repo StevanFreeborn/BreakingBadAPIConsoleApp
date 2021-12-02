@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Configuration;
-using System.Collections.Generic;
-using Onspring.API.SDK;
 using Onspring.API.SDK.Helpers;
-using Onspring.API.SDK.Enums;
-using Onspring.API.SDK.Models;
-using Newtonsoft.Json;
-using static Utility;
 
 namespace consoleApplication
 {
@@ -19,7 +13,6 @@ namespace consoleApplication
             var apiKey = ConfigurationManager.AppSettings["apiKey"];
             var onspringAPI = new OnspringHelper(onspringBaseUrl, apiKey);
             Console.WriteLine("Connecting to Onspring API...");
-            Console.WriteLine();
 
             // verify connectivity to onspring api.
             bool onspringCanConnect = AsyncHelper.RunTask(() => onspringAPI._client.CanConnectAsync());
@@ -41,10 +34,9 @@ namespace consoleApplication
             Console.WriteLine();
             
             // load a random character from thebreakingbadapi.com
-            Console.WriteLine("Retrieving random character from thebreakingbadapi.com...");
-            var breakingBadCharacters = breakingBadApi.GetARandomCharacter();
-            // var breakingBadCharacters = breakingBadApi.GetAllCharacters();
-            Console.WriteLine(JsonConvert.SerializeObject(breakingBadCharacters, Formatting.Indented));
+            Console.WriteLine("Retrieving characters from thebreakingbadapi.com...");
+            // var breakingBadCharacters = breakingBadApi.GetACharacterById(19);
+            var breakingBadCharacters = breakingBadApi.GetAllCharacters();
             Console.WriteLine();
 
             if (breakingBadCharacters != null && breakingBadCharacters.Length > 0)
@@ -60,12 +52,11 @@ namespace consoleApplication
                     else
                     {
                         Console.WriteLine("Didn't find {0} in Onspring.", breakingBadCharacter.name);
-                        Console.WriteLine();
 
-                        var occupationRecordIds = onspringAPI.GetOccupationRecordIds(breakingBadCharacter.occupation);
-                        var seasonRecordIds = onspringAPI.GetSeasonRecordIds(breakingBadCharacter.appearance);
-                        var categoryRecordIds = onspringAPI.GetCategoryRecordIds(breakingBadCharacter.category);
-                        var status = onspringAPI.GetStatusGuidValue(breakingBadCharacter.status);
+                        var occupationRecordIds = onspringAPI.GetOccupationsByNameOrAddOccupations(breakingBadCharacter.occupation);
+                        var seasonRecordIds = onspringAPI.GetSeasonsByNameOrAddSeasons(breakingBadCharacter.appearance);
+                        var categoryRecordIds = onspringAPI.GetCategoriesByNameOrAddCategories(breakingBadCharacter.category);
+                        var status = onspringAPI.GetStatusGuidValueByNameOrAddStatusListValue(breakingBadCharacter.status);
                         var birthday = DateTime.TryParse(breakingBadCharacter.birthday, out DateTime bday);
 
                         onspringCharacter = new OnspringCharacter
@@ -80,10 +71,12 @@ namespace consoleApplication
                             portrayed = breakingBadCharacter.portrayed,
                             category = categoryRecordIds
                         };
+
                         var newCharacterRecordId = onspringAPI.AddNewOnspringCharacter(onspringCharacter);
                         if(newCharacterRecordId.HasValue)
                         {
                             Console.WriteLine("Added {0} in Onspring. (record id {1}) ", onspringCharacter.name, newCharacterRecordId);
+                            Console.WriteLine();
                         }
                         else
                         {

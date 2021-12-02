@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace consoleApplication
+﻿namespace consoleApplication
 {
 	public class OnspringQuote
 	{
