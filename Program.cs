@@ -18,13 +18,17 @@ namespace consoleApplication
             var onspringBaseUrl = ConfigurationManager.AppSettings["baseUrl"]; ;
             var apiKey = ConfigurationManager.AppSettings["apiKey"];
             var onspringAPI = new OnspringHelper(onspringBaseUrl, apiKey);
-            
+            Console.WriteLine("Connecting to Onspring API...");
+            Console.WriteLine();
+
             // verify connectivity to onspring api.
             bool onspringCanConnect = AsyncHelper.RunTask(() => onspringAPI._client.CanConnectAsync());
             
             // create breaking bad api client.
             const string breakingBadBaseUrl = "https://www.breakingbadapi.com/api/";
             var breakingBadApi = new BreakingBadHelper(breakingBadBaseUrl);
+            Console.WriteLine("Connecting to Breaking Bad API...");
+            Console.WriteLine();
 
             // verify connectivity to breaking bad api.
             bool breakingBadCanConnect = breakingBadApi.CanConnect();
@@ -34,30 +38,57 @@ namespace consoleApplication
             else if(!onspringCanConnect && breakingBadCanConnect) { Console.WriteLine("Could not connect to the Onspring API."); }
             else if(onspringCanConnect && !breakingBadCanConnect) { Console.WriteLine("Could not connect to the Breaking Bad API."); }
             else { Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");}
-            Console.WriteLine("\n");
+            Console.WriteLine();
             
             // load a random character from thebreakingbadapi.com
-            Console.WriteLine("Retrieving random character from thebreakingbadapi.com.");
-            var randomBreakingBadCharacters = breakingBadApi.GetARandomCharacter();
-            Console.WriteLine("\n");
+            Console.WriteLine("Retrieving random character from thebreakingbadapi.com...");
+            var breakingBadCharacters = breakingBadApi.GetARandomCharacter();
+            // var breakingBadCharacters = breakingBadApi.GetAllCharacters();
+            Console.WriteLine(JsonConvert.SerializeObject(breakingBadCharacters, Formatting.Indented));
+            Console.WriteLine();
 
-            // log the character loaded from thebreakingbadapi.com
-            Console.WriteLine(JsonConvert.SerializeObject(randomBreakingBadCharacters, Formatting.Indented));
-            
-            if (randomBreakingBadCharacters != null && randomBreakingBadCharacters.Length > 0)
+            if (breakingBadCharacters != null && breakingBadCharacters.Length > 0)
             {
-                foreach(var breakingBadCharacter in randomBreakingBadCharacters)
+                foreach(var breakingBadCharacter in breakingBadCharacters)
                 {
                     var onspringCharacter = onspringAPI.GetCharacterById(breakingBadCharacter.char_id.ToString());
 
                     if(onspringCharacter != null)
                     {
-                        Console.WriteLine("Found {0} (id: {1} record id:{2}) in Onspring.", onspringCharacter.name, onspringCharacter.id, onspringCharacter.recordId);
+                        Console.WriteLine("Found {0} in Onspring. (record id:{1})", onspringCharacter.name, onspringCharacter.recordId);
                     }
                     else
                     {
-                        Console.WriteLine("Didn't find any character in Onspring with id {0}", breakingBadCharacter.char_id);
+                        Console.WriteLine("Didn't find {0} in Onspring.", breakingBadCharacter.name);
+                        Console.WriteLine();
+
                         var occupationRecordIds = onspringAPI.GetOccupationRecordIds(breakingBadCharacter.occupation);
+                        var seasonRecordIds = onspringAPI.GetSeasonRecordIds(breakingBadCharacter.appearance);
+                        var categoryRecordIds = onspringAPI.GetCategoryRecordIds(breakingBadCharacter.category);
+                        var status = onspringAPI.GetStatusGuidValue(breakingBadCharacter.status);
+                        var birthday = DateTime.TryParse(breakingBadCharacter.birthday, out DateTime bday);
+
+                        onspringCharacter = new OnspringCharacter
+                        {
+                            id = breakingBadCharacter.char_id,
+                            name = breakingBadCharacter.name,
+                            birthday = birthday ? bday : null,
+                            occupation = occupationRecordIds,
+                            status = status,
+                            nickname = breakingBadCharacter.nickname,
+                            appearances = seasonRecordIds,
+                            portrayed = breakingBadCharacter.portrayed,
+                            category = categoryRecordIds
+                        };
+                        var newCharacterRecordId = onspringAPI.AddNewOnspringCharacter(onspringCharacter);
+                        if(newCharacterRecordId.HasValue)
+                        {
+                            Console.WriteLine("Added {0} in Onspring. (record id {1}) ", onspringCharacter.name, newCharacterRecordId);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Failed to create {0} in Onspring.", breakingBadCharacter.name);
+                        }
                     }
                 }
             }

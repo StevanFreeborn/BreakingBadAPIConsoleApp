@@ -1,27 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace consoleApplication
 {
+	[Serializable]
 	public class BreakingBadCharacter
 	{
+		[JsonProperty("char_id")]
 		public int char_id { get; set; }
+		[JsonProperty("name")]
 		public string name { get; set; }
+		[JsonProperty("birthday")]
 		public string birthday { get; set; }
-		public string[] occupation { get; set; }
+		[JsonProperty("occupation")]
+		public List<string> occupation { get; set; }
+		[JsonProperty("img")]
 		public string img { get; set; }
-		public string status { get; set; }
-		public string nickname { get; set; }
-		public string[] appearance { get; set; }
+        [JsonProperty("status")]
+        public string status { get; set; }
+		[JsonProperty("nickname")]
+        public string nickname { get; set; }
+		[JsonProperty("appearance")]
+		public List<string> appearance { get; set; }
+		[JsonProperty("portrayed")]
 		public string portrayed { get; set; }
+		[JsonProperty("category")]
 		public string category { get; set; }
-		public string better_call_saul_appearance { get; set; }
-
-		public Guid? GetStatusGuidValue(string status)
-        {
-			if(status == "Alive") { return Guid.Parse("63afab90-b951-4b82-87c4-dfd20f8c98d9"); }
-			if(status == "Deceased") { return Guid.Parse("41f8b40d-ae07-42d4-af53-9751dd88bb05"); }
-			else { return null; }
-        }
+		[JsonProperty("better_call_saul_appearance")]
+		[JsonConverter(typeof(CustomArrayConverter<string>))]
+		public List<string> better_call_saul_appearance { get; set; }
 	}
 }
