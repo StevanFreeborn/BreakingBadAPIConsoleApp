@@ -22,6 +22,7 @@ namespace consoleApplication
 		[JsonProperty("nickname")]
         public string nickname { get; set; }
 		[JsonProperty("appearance")]
+		[JsonConverter(typeof(CustomArrayConverter<string>))]
 		public List<string> appearance { get; set; }
 		[JsonProperty("portrayed")]
 		public string portrayed { get; set; }

@@ -1,10 +1,13 @@
-﻿namespace consoleApplication
+﻿using System.Collections.Generic;
+
+namespace consoleApplication
 {
 	public class OnspringQuote
 	{
-		public int quote_id { get; set; }
+		public int recordId { get; set; }
+		public decimal? id { get; set; }
 		public string quote { get; set; }
-		public int author { get; set; }
-		public int series { get; set; }
+		public List<int> author { get; set; }
+		public List<int> series { get; set; }
 	}
 }

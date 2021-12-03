@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Configuration;
+using System.Collections.Generic;
 using Onspring.API.SDK.Helpers;
+using Newtonsoft.Json;
 
 namespace consoleApplication
 {
@@ -15,13 +17,12 @@ namespace consoleApplication
             Console.WriteLine("Connecting to Onspring API...");
 
             // verify connectivity to onspring api.
-            bool onspringCanConnect = AsyncHelper.RunTask(() => onspringAPI._client.CanConnectAsync());
+            bool onspringCanConnect = AsyncHelper.RunTask(() => onspringAPI.client.CanConnectAsync());
             
             // create breaking bad api client.
             const string breakingBadBaseUrl = "https://www.breakingbadapi.com/api/";
             var breakingBadApi = new BreakingBadHelper(breakingBadBaseUrl);
             Console.WriteLine("Connecting to Breaking Bad API...");
-            Console.WriteLine();
 
             // verify connectivity to breaking bad api.
             bool breakingBadCanConnect = breakingBadApi.CanConnect();
@@ -33,21 +34,40 @@ namespace consoleApplication
             else { Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");}
             Console.WriteLine();
             
-            // load characters from thebreakingbadapi.com
-            Console.WriteLine("Retrieving characters from thebreakingbadapi.com...");
-            // var breakingBadCharacters = breakingBadApi.GetACharacterById(19);
-            var breakingBadCharacters = breakingBadApi.GetAllCharacters();
-            Console.WriteLine();
-
+            // load characters from thebreakingbadapi.com.
+            Console.WriteLine("Retrieving character from thebreakingbadapi.com...");
+            var breakingBadCharacters = breakingBadApi.GetARandomCharacter();
+            
+            // check whether breaking bad characters were returned from request.
             if (breakingBadCharacters != null && breakingBadCharacters.Length > 0)
             {
+                // loop through the breaking bad characters returned.
                 foreach(var breakingBadCharacter in breakingBadCharacters)
                 {
+                    // get a character from onspring that has the same character id as the breaking bad character.
                     var onspringCharacter = onspringAPI.GetCharacterById(breakingBadCharacter.char_id.ToString());
+
 
                     if(onspringCharacter != null)
                     {
                         Console.WriteLine("Found {0} in Onspring. (record id:{1})", onspringCharacter.name, onspringCharacter.recordId);
+                        Console.WriteLine();
+                        Console.WriteLine("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
+
+                        var breakingBadCharacterQuotes = breakingBadApi.GetQuotesByAuthor(breakingBadCharacter.name);
+
+                        if (breakingBadCharacterQuotes != null && breakingBadCharacterQuotes.Length > 0)
+                        {
+                            foreach (var quote in breakingBadCharacterQuotes)
+                            {
+                                onspringAPI.GetQuoteByIdOrAddQuote(quote, onspringCharacter.recordId);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No quotes found by {0}.", breakingBadCharacter.name);
+                            Console.WriteLine();
+                        }
                     }
                     else
                     {
@@ -77,6 +97,22 @@ namespace consoleApplication
                         {
                             Console.WriteLine("Added {0} in Onspring. (record id {1}) ", onspringCharacter.name, newCharacterRecordId);
                             Console.WriteLine();
+                            Console.WriteLine("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
+
+                            var breakingBadCharacterQuotes = breakingBadApi.GetQuotesByAuthor(breakingBadCharacter.name);
+
+                            if (breakingBadCharacterQuotes != null && breakingBadCharacterQuotes.Length > 0)
+                            {
+                                foreach (var quote in breakingBadCharacterQuotes)
+                                {
+                                    onspringAPI.GetQuoteByIdOrAddQuote(quote, newCharacterRecordId);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("No quotes found by {0}.", breakingBadCharacter.name);
+                                Console.WriteLine();
+                            }
 
                         }
                         else

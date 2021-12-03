@@ -10,19 +10,21 @@ namespace consoleApplication
 {
     public class OnspringHelper
     {
-        public OnspringClient _client;
-        public OnspringCharacterMapper _characterMapper;
-        public OnspringOccupationMapper _occupationMapper;
-        public OnspringSeasonMapper _seasonMapper;
-        public OnspringCategoryMapper _categoryMapper;
+        public OnspringClient client;
+        public OnspringCharacterMapper characterMapper;
+        public OnspringOccupationMapper occupationMapper;
+        public OnspringSeasonMapper seasonMapper;
+        public OnspringCategoryMapper categoryMapper;
+        public OnspringQuoteMapper quoteMapper;
 
         public OnspringHelper(string baseUrl, string apiKey)
         {
-            _client = new OnspringClient(baseUrl, apiKey);
-            _characterMapper = new OnspringCharacterMapper();
-            _occupationMapper = new OnspringOccupationMapper();
-            _seasonMapper = new OnspringSeasonMapper();
-            _categoryMapper = new OnspringCategoryMapper();
+            client = new OnspringClient(baseUrl, apiKey);
+            characterMapper = new OnspringCharacterMapper();
+            occupationMapper = new OnspringOccupationMapper();
+            seasonMapper = new OnspringSeasonMapper();
+            categoryMapper = new OnspringCategoryMapper();
+            quoteMapper = new OnspringQuoteMapper();
         }
 
         public OnspringCharacter GetCharacterById(string characterId)
@@ -33,12 +35,12 @@ namespace consoleApplication
             }
             var queryRequest = new QueryRecordsRequest
             {
-                AppId = _characterMapper.charactersAppId,
-                Filter = $"{_characterMapper.charactersIdFieldId} eq {characterId}",
+                AppId = characterMapper.charactersAppId,
+                Filter = $"{characterMapper.charactersIdFieldId} eq {characterId}",
                 FieldIds = new List<int> {},
                 DataFormat = DataFormat.Raw,
             };
-            var queryResponse = AsyncHelper.RunTask(() => _client.QueryRecordsAsync(queryRequest));
+            var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
             var records = queryResponse.Value.Items;
 
             switch (records.Count)
@@ -46,7 +48,7 @@ namespace consoleApplication
                 case 0:
                     return null;
                 case 1:
-                    return _characterMapper.LoadCharacter(records[0]);
+                    return characterMapper.LoadCharacter(records[0]);
                 default:
                     throw new ApplicationException("More than one character with id: " + characterId);
             }
@@ -66,17 +68,17 @@ namespace consoleApplication
 
                 var queryRequest = new QueryRecordsRequest()
                 {
-                    AppId = _occupationMapper.occupationsAppId,
-                    Filter = $"{_occupationMapper.occupationsNameFieldId} eq '{filterValue}'",
+                    AppId = occupationMapper.occupationsAppId,
+                    Filter = $"{occupationMapper.occupationsNameFieldId} eq '{filterValue}'",
                     FieldIds = new List<int> { },
                     DataFormat = DataFormat.Raw,
                 };
 
-                var queryResponse = AsyncHelper.RunTask(() => _client.QueryRecordsAsync(queryRequest));
+                var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
                 var records = queryResponse.Value.Items;
                 if(records.Count > 0)
                 {
-                    var onspringOccupation = _occupationMapper.LoadOccupation(records[0]);
+                    var onspringOccupation = occupationMapper.LoadOccupation(records[0]);
                     occupationRecordIds.Add(onspringOccupation.recordId);
                 }
                 else
@@ -108,17 +110,17 @@ namespace consoleApplication
 
                 var queryRequest = new QueryRecordsRequest()
                 {
-                    AppId = _seasonMapper.seasonsAppId,
-                    Filter = $"{_seasonMapper.seasonsNameFieldId} eq '{filterValue}'",
+                    AppId = seasonMapper.seasonsAppId,
+                    Filter = $"{seasonMapper.seasonsNameFieldId} eq '{filterValue}'",
                     FieldIds = new List<int> { },
                     DataFormat = DataFormat.Raw,
                 };
 
-                var queryResponse = AsyncHelper.RunTask(() => _client.QueryRecordsAsync(queryRequest));
+                var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
                 var records = queryResponse.Value.Items;
                 if (records.Count > 0)
                 {
-                    var onspringSeason = _seasonMapper.LoadSeason(records[0]);
+                    var onspringSeason = seasonMapper.LoadSeason(records[0]);
                     seasonRecordIds.Add(onspringSeason.recordId);
                 }
                 else
@@ -156,17 +158,17 @@ namespace consoleApplication
 
                 var queryRequest = new QueryRecordsRequest()
                 {
-                    AppId = _categoryMapper.categoriesAppId,
-                    Filter = $"{_categoryMapper.categoriesNameFieldId} eq '{filterValue}'",
+                    AppId = categoryMapper.categoriesAppId,
+                    Filter = $"{categoryMapper.categoriesNameFieldId} eq '{filterValue}'",
                     FieldIds = new List<int> { },
                     DataFormat = DataFormat.Raw,
                 };
 
-                var queryResponse = AsyncHelper.RunTask(() => _client.QueryRecordsAsync(queryRequest));
+                var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
                 var records = queryResponse.Value.Items;
                 if (records.Count > 0)
                 {
-                    var onspringCategory = _categoryMapper.LoadCategory(records[0]);
+                    var onspringCategory = categoryMapper.LoadCategory(records[0]);
                     categoryRecordIds.Add(onspringCategory.recordId);
                 }
                 else
@@ -184,8 +186,8 @@ namespace consoleApplication
         }
         public Guid? GetStatusGuidValueByNameOrAddStatusListValue(string status)
         {
-            var statusFieldId = _characterMapper.charactersStatusFieldId;
-            var getFieldResponse = _client.GetFieldAsync(statusFieldId);
+            var statusFieldId = characterMapper.charactersStatusFieldId;
+            var getFieldResponse = client.GetFieldAsync(statusFieldId);
             var field = getFieldResponse.Result.Value;
             var statusListField = field as ListField;
             var listId = int.Parse(ConfigurationManager.AppSettings["charactersStatusFieldListId"]);
@@ -211,32 +213,86 @@ namespace consoleApplication
                     NumericValue = null,
                     Color = null,
                 };
-                var saveListItemResponse = _client.SaveListItemAsync(saveListItemRequest);
+                var saveListItemResponse = client.SaveListItemAsync(saveListItemRequest);
                 return saveListItemResponse.Result.Value.Id;
+            }
+        }
+        public void GetQuoteByIdOrAddQuote(BreakingBadQuote quote, int? onspringCharacterRecordId)
+        {
+            if (string.IsNullOrEmpty(quote.quote_id.ToString()))
+            {
+                Console.WriteLine("Could not look up or add quote {0} in Onspring.", quote.quote_id);
+            }
+            var queryRequest = new QueryRecordsRequest
+            {
+                AppId = quoteMapper.quotesAppId,
+                Filter = $"{quoteMapper.quotesIdFieldId} eq {quote.quote_id}",
+                FieldIds = new List<int> { },
+                DataFormat = DataFormat.Raw,
+            };
+            var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
+            var records = queryResponse.Value.Items;
+
+            if(records.Count > 1)
+            {
+                throw new ApplicationException("More than one quote with id: " + quote.quote_id);
+            }
+            else if(records.Count > 0)
+            {
+                var onspringQuote = quoteMapper.LoadQuote(records[0]);
+                Console.WriteLine("Found quote {0} in Onspring. (record id:{1})", quote.quote_id, onspringQuote.recordId);
+            }
+            else
+            {
+                var author = new List<int>();
+                author.Add(onspringCharacterRecordId.GetValueOrDefault());
+                var series = GetCategoriesByNameOrAddCategories(quote.series);
+                var onspringQuote = new OnspringQuote
+                {
+                    id = quote.quote_id,
+                    quote = quote.quote,
+                    author = author,
+                    series = series
+                };
+                var newOnspringQuoteRecordId = AddNewOnspringQuote(onspringQuote);
+                if (newOnspringQuoteRecordId.HasValue)
+                {
+                    Console.WriteLine("Added quote {0} in Onspring. (record id {1}) ", onspringQuote.id, newOnspringQuoteRecordId);
+                }
+                else
+                {
+                    Console.WriteLine("Failed to create quote {0} in Onspring.", quote.quote_id);
+                }
             }
         }
         public int? AddNewOnspringCharacter(OnspringCharacter character)
         {
-            var record = _characterMapper.GetAddEditCharacterValues(character);
-            var saveResponse = _client.SaveRecordAsync(record);
+            var record = characterMapper.GetAddEditCharacterValues(character);
+            var saveResponse = client.SaveRecordAsync(record);
             return saveResponse.Result.Value.Id;
         }
         public int? AddNewOnspringOccupation(OnspringOccupation occupation)
         {
-            var record = _occupationMapper.GetAddEditOccupationValues(occupation);
-            var saveResponse = _client.SaveRecordAsync(record);
+            var record = occupationMapper.GetAddEditOccupationValues(occupation);
+            var saveResponse = client.SaveRecordAsync(record);
             return saveResponse?.Result.Value.Id;
         }
         public int? AddNewOnspringSeason(OnspringSeason season)
         {
-            var record = _seasonMapper.GetAddEditSeasonValues(season);
-            var saveResponse = _client.SaveRecordAsync(record);
+            var record = seasonMapper.GetAddEditSeasonValues(season);
+            var saveResponse = client.SaveRecordAsync(record);
             return saveResponse?.Result.Value.Id;
         }
         public int? AddNewOnspringCategory(OnspringCategory category)
         {
-            var record = _categoryMapper.GetAddEditCategoryValues(category);
-            var saveResponse = _client.SaveRecordAsync(record);
+            var record = categoryMapper.GetAddEditCategoryValues(category);
+            var saveResponse = client.SaveRecordAsync(record);
+            return saveResponse?.Result.Value.Id;
+        }
+        public int? AddNewOnspringQuote(OnspringQuote quote)
+        {
+            var record = quoteMapper.GetAddEditQuoteValues(quote);
+            var saveResponse = client.SaveRecordAsync(record);
             return saveResponse?.Result.Value.Id;
         }
     }
