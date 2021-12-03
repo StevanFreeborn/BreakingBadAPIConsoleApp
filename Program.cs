@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Configuration;
-using System.Collections.Generic;
 using Onspring.API.SDK.Helpers;
-using Newtonsoft.Json;
 
 namespace consoleApplication
 {
@@ -31,7 +29,9 @@ namespace consoleApplication
             if(onspringCanConnect && breakingBadCanConnect) { Console.WriteLine("Connected successfully."); }
             else if(!onspringCanConnect && breakingBadCanConnect) { Console.WriteLine("Could not connect to the Onspring API."); }
             else if(onspringCanConnect && !breakingBadCanConnect) { Console.WriteLine("Could not connect to the Breaking Bad API."); }
-            else { Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");}
+            else
+            {
+                Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");}
             Console.WriteLine();
             
             // load characters from thebreakingbadapi.com.
@@ -78,7 +78,6 @@ namespace consoleApplication
                         var categoryRecordIds = onspringAPI.GetCategoriesByNameOrAddCategories(breakingBadCharacter.category);
                         var status = onspringAPI.GetStatusGuidValueByNameOrAddStatusListValue(breakingBadCharacter.status);
                         var birthday = DateTime.TryParse(breakingBadCharacter.birthday, out DateTime bday);
-
                         onspringCharacter = new OnspringCharacter
                         {
                             id = breakingBadCharacter.char_id,
@@ -91,8 +90,8 @@ namespace consoleApplication
                             portrayed = breakingBadCharacter.portrayed,
                             category = categoryRecordIds
                         };
-
                         var newCharacterRecordId = onspringAPI.AddNewOnspringCharacter(onspringCharacter);
+
                         if(newCharacterRecordId.HasValue)
                         {
                             Console.WriteLine("Added {0} in Onspring. (record id {1}) ", onspringCharacter.name, newCharacterRecordId);
