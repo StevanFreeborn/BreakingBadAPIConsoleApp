@@ -50,7 +50,7 @@ namespace consoleApplication
                 case 1:
                     return characterMapper.LoadCharacter(records[0]);
                 default:
-                    throw new ApplicationException("More than one character with id: " + characterId);
+                    throw new Exception("More than one character with id: " + characterId);
             }
         }
         public List<int> GetOccupationsByNameOrAddOccupations(List<string> occupationNames)
