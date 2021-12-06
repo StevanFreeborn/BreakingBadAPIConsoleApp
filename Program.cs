@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using Onspring.API.SDK.Helpers;
+using Serilog;
 
 namespace consoleApplication
 {
@@ -8,11 +9,15 @@ namespace consoleApplication
     {
         static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration().ReadFrom.AppSettings().CreateLogger();
+
             // create onspring api client.
             var onspringBaseUrl = ConfigurationManager.AppSettings["baseUrl"]; ;
             var apiKey = ConfigurationManager.AppSettings["apiKey"];
             var onspringAPI = new OnspringHelper(onspringBaseUrl, apiKey);
-            Console.WriteLine("Connecting to Onspring API...");
+            var onspringApiMessage = "Connecting to Onspring API...";
+            Log.Information(onspringApiMessage);
+            Console.WriteLine(onspringApiMessage);
 
             // verify connectivity to onspring api.
             bool onspringCanConnect = AsyncHelper.RunTask(() => onspringAPI.client.CanConnectAsync());
@@ -20,34 +25,48 @@ namespace consoleApplication
             // create breaking bad api client.
             const string breakingBadBaseUrl = "https://www.breakingbadapi.com/api/";
             var breakingBadApi = new BreakingBadHelper(breakingBadBaseUrl);
-            Console.WriteLine("Connecting to Breaking Bad API...");
+            var breakingBadApiMessage = "Connecting to Breaking Bad API...";
+            Log.Information(breakingBadApiMessage);
+            Console.WriteLine(breakingBadApiMessage);
 
             // verify connectivity to breaking bad api.
             bool breakingBadCanConnect = breakingBadApi.CanConnect();
 
+            var connectionResultMessage = "";
+
             // verify connectivity to breaking bad api and onspring api and log an appropriate response given responses received.
             if(onspringCanConnect && breakingBadCanConnect)
             {
-                Console.WriteLine("Connected successfully.");
+                connectionResultMessage = "Connected successfully.";
+                Log.Information(connectionResultMessage);
+                Console.WriteLine(connectionResultMessage);
             }
             else if(!onspringCanConnect && breakingBadCanConnect)
             {
-                throw new Exception("Could not connect to the Onspring API.");
+                connectionResultMessage = "Could not connect to the Onspring API.";
+                Log.Error(connectionResultMessage);
+                throw new Exception(connectionResultMessage);
             }
             else if(onspringCanConnect && !breakingBadCanConnect)
             {
-                throw new Exception("Could not connect to the Breaking Bad API.");
+                connectionResultMessage = "Could not connect to the Breaking Bad API.";
+                Log.Error(connectionResultMessage);
+                throw new Exception(connectionResultMessage);
             }
             else
             {
-                throw new Exception("Unable to connect to either the Onspring API or the Breaking Bad API.");
+                connectionResultMessage = "Unable to connect to either the Onspring API or the Breaking Bad API.";
+                Log.Error(connectionResultMessage);
+                throw new Exception(connectionResultMessage);
             }
             Console.WriteLine();
-            
+
             // load characters from thebreakingbadapi.com.
-            Console.WriteLine("Retrieving character from thebreakingbadapi.com...");
+            var retrievingCharacterMessage = "Retrieving character from thebreakingbadapi.com...";
+            Log.Information(retrievingCharacterMessage);
+            Console.WriteLine(retrievingCharacterMessage);
             var breakingBadCharacters = breakingBadApi.GetARandomCharacter();
-            
+
             // check whether breaking bad characters were returned from request.
             if (breakingBadCharacters != null && breakingBadCharacters.Length > 0)
             {
@@ -60,9 +79,13 @@ namespace consoleApplication
                     // check to see if an onspring character was returned.
                     if(onspringCharacter != null)
                     {
-                        Console.WriteLine("Found {0} in Onspring. (record id:{1})", onspringCharacter.name, onspringCharacter.recordId);
+                        var characterFoundMessage = string.Format("Found {0} in Onspring. (record id:{1})", onspringCharacter.name, onspringCharacter.recordId);
+                        Log.Information(characterFoundMessage);
+                        Console.WriteLine(characterFoundMessage);
                         Console.WriteLine();
-                        Console.WriteLine("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
+                        var retrievingQuoteMessage = string.Format("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
+                        Log.Information(retrievingQuoteMessage);
+                        Console.WriteLine(retrievingQuoteMessage);
 
                         var breakingBadCharacterQuotes = breakingBadApi.GetQuotesByAuthor(breakingBadCharacter.name);
 
@@ -75,13 +98,17 @@ namespace consoleApplication
                         }
                         else
                         {
-                            Console.WriteLine("No quotes found by {0}.", breakingBadCharacter.name);
+                            var noQuoteFoundMessage = string.Format("No quotes found by {0}.", breakingBadCharacter.name);
+                            Log.Information(noQuoteFoundMessage);
+                            Console.WriteLine(noQuoteFoundMessage);
                             Console.WriteLine();
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Didn't find {0} in Onspring.", breakingBadCharacter.name);
+                        var noCharacterFoundMessage = string.Format("Didn't find {0} in Onspring.", breakingBadCharacter.name);
+                        Log.Information(noCharacterFoundMessage);
+                        Console.WriteLine(noCharacterFoundMessage);
 
                         var occupationRecordIds = onspringAPI.GetOccupationsByNameOrAddOccupations(breakingBadCharacter.occupation);
                         var seasonRecordIds = onspringAPI.GetSeasonsByNameOrAddSeasons(breakingBadCharacter.appearance);
@@ -104,9 +131,14 @@ namespace consoleApplication
 
                         if(newCharacterRecordId.HasValue)
                         {
-                            Console.WriteLine("Added {0} in Onspring. (record id {1}) ", onspringCharacter.name, newCharacterRecordId);
+                            var successfulCharacterAddMessage = string.Format("Added {0} in Onspring. (record id {1}) ", onspringCharacter.name, newCharacterRecordId);
+                            Log.Information(successfulCharacterAddMessage);
+                            Console.WriteLine(successfulCharacterAddMessage);
                             Console.WriteLine();
-                            Console.WriteLine("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
+
+                            var retrievingQuoteMessage = string.Format("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
+                            Log.Information(retrievingQuoteMessage);
+                            Console.WriteLine(retrievingQuoteMessage);
 
                             var breakingBadCharacterQuotes = breakingBadApi.GetQuotesByAuthor(breakingBadCharacter.name);
 
@@ -119,18 +151,23 @@ namespace consoleApplication
                             }
                             else
                             {
-                                Console.WriteLine("No quotes found by {0}.", breakingBadCharacter.name);
+                                var noQuoteFoundMessage = string.Format("No quotes found by {0}.", breakingBadCharacter.name);
+                                Log.Information(noQuoteFoundMessage);
+                                Console.WriteLine(noQuoteFoundMessage);
                                 Console.WriteLine();
                             }
 
                         }
                         else
                         {
-                            Console.WriteLine("Failed to create {0} in Onspring.", breakingBadCharacter.name);
+                            var unsuccessfulCharacterAddMessage = string.Format("Failed to create {0} in Onspring.", breakingBadCharacter.name);
+                            Log.Information(unsuccessfulCharacterAddMessage);
+                            Console.WriteLine(unsuccessfulCharacterAddMessage);
                         }
                     }
                 }
             }
+            Log.CloseAndFlush();
         }
     }
 }
