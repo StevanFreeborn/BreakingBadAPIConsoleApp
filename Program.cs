@@ -26,12 +26,22 @@ namespace consoleApplication
             bool breakingBadCanConnect = breakingBadApi.CanConnect();
 
             // verify connectivity to breaking bad api and onspring api and log an appropriate response given responses received.
-            if(onspringCanConnect && breakingBadCanConnect) { Console.WriteLine("Connected successfully."); }
-            else if(!onspringCanConnect && breakingBadCanConnect) { Console.WriteLine("Could not connect to the Onspring API."); }
-            else if(onspringCanConnect && !breakingBadCanConnect) { Console.WriteLine("Could not connect to the Breaking Bad API."); }
+            if(onspringCanConnect && breakingBadCanConnect)
+            {
+                Console.WriteLine("Connected successfully.");
+            }
+            else if(!onspringCanConnect && breakingBadCanConnect)
+            {
+                throw new Exception("Could not connect to the Onspring API.");
+            }
+            else if(onspringCanConnect && !breakingBadCanConnect)
+            {
+                throw new Exception("Could not connect to the Breaking Bad API.");
+            }
             else
             {
-                Console.WriteLine("Unable to connect to either the Onspring API or the Breaking Bad API.");}
+                throw new Exception("Unable to connect to either the Onspring API or the Breaking Bad API.");
+            }
             Console.WriteLine();
             
             // load characters from thebreakingbadapi.com.
