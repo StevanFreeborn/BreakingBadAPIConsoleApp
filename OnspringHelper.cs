@@ -190,7 +190,7 @@ namespace consoleApplication
             var getFieldResponse = client.GetFieldAsync(statusFieldId);
             var field = getFieldResponse.Result.Value;
             var statusListField = field as ListField;
-            var listId = int.Parse(ConfigurationManager.AppSettings["charactersStatusFieldListId"]);
+            var listId = statusListField.ListId;
             Guid? statusGuidValue = null;
             foreach(var item in statusListField.Values)
             {
