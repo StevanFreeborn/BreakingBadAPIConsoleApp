@@ -40,9 +40,9 @@ namespace consoleApplication
                 FieldIds = new List<int> {},
                 DataFormat = DataFormat.Raw,
             };
-            Log.Information("GetCharacterById Request: {@queryRequest}", queryRequest);
+            Log.Debug("GetCharacterById Request: {@queryRequest}", queryRequest);
             var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
-            Log.Information("GetCharacterById Response: {@queryResponse}", queryResponse);
+            Log.Debug("GetCharacterById Response: {@queryResponse}", queryResponse);
 
             var records = queryResponse.Value.Items;
 

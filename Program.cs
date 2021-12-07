@@ -61,7 +61,7 @@ namespace consoleApplication
             // check whether breaking bad characters were returned from request.
             if (breakingBadCharacters != null && breakingBadCharacters.Length > 0)
             {
-                Log.Information("{@breakingBadCharacters}",breakingBadCharacters);
+                Log.Debug("{@breakingBadCharacters}",breakingBadCharacters);
 
                 // loop through the breaking bad characters returned.
                 foreach(var breakingBadCharacter in breakingBadCharacters)

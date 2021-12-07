@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Serilog;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -65,7 +64,9 @@ namespace consoleApplication
 		{
 			var endPoint = "character/random";
 			var request = new RestRequest(endPoint);
+			Log.Debug("GetARandomCharacter Request: {@request}", request);
 			var response = _client.Get(request);
+			Log.Debug("GetARandomCharacter Response: {@response}", response);
 			var characters = JsonConvert.DeserializeObject<BreakingBadCharacter[]>(response.Content);
 			return characters;
 		}
@@ -74,7 +75,9 @@ namespace consoleApplication
 			var authName = authorName.Replace(" ", "+");
 			var endPoint = "quote?author=" + authName;
 			var request = new RestRequest(endPoint);
+			Log.Debug("GetQuotesByAuthor Request: {@request}", request);
 			var response = _client.Get(request);
+			Log.Debug("GetQuotesByAuthor Response: {@response}", response);
 			var quotes = JsonConvert.DeserializeObject<BreakingBadQuote[]>(response.Content);
 			return quotes;
 		}
