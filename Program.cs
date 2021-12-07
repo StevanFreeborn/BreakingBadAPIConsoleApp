@@ -15,9 +15,7 @@ namespace consoleApplication
             var onspringBaseUrl = ConfigurationManager.AppSettings["baseUrl"]; ;
             var apiKey = ConfigurationManager.AppSettings["apiKey"];
             var onspringAPI = new OnspringHelper(onspringBaseUrl, apiKey);
-            var onspringApiMessage = "Connecting to Onspring API...";
-            Log.Information(onspringApiMessage);
-            Console.WriteLine(onspringApiMessage);
+            Log.Information("Connecting to Onspring API...");
 
             // verify connectivity to onspring api.
             bool onspringCanConnect = AsyncHelper.RunTask(() => onspringAPI.client.CanConnectAsync());
@@ -25,9 +23,7 @@ namespace consoleApplication
             // create breaking bad api client.
             const string breakingBadBaseUrl = "https://www.breakingbadapi.com/api/";
             var breakingBadApi = new BreakingBadHelper(breakingBadBaseUrl);
-            var breakingBadApiMessage = "Connecting to Breaking Bad API...";
-            Log.Information(breakingBadApiMessage);
-            Console.WriteLine(breakingBadApiMessage);
+            Log.Information("Connecting to Breaking Bad API...");
 
             // verify connectivity to breaking bad api.
             bool breakingBadCanConnect = breakingBadApi.CanConnect();
@@ -37,9 +33,7 @@ namespace consoleApplication
             // verify connectivity to breaking bad api and onspring api and log an appropriate response given responses received.
             if(onspringCanConnect && breakingBadCanConnect)
             {
-                connectionResultMessage = "Connected successfully.";
-                Log.Information(connectionResultMessage);
-                Console.WriteLine(connectionResultMessage);
+                Log.Information("Connected successfully.");
             }
             else if(!onspringCanConnect && breakingBadCanConnect)
             {
@@ -62,9 +56,7 @@ namespace consoleApplication
             Console.WriteLine();
 
             // load characters from thebreakingbadapi.com.
-            var retrievingCharacterMessage = "Retrieving character from thebreakingbadapi.com...";
-            Log.Information(retrievingCharacterMessage);
-            Console.WriteLine(retrievingCharacterMessage);
+            Log.Information("Retrieving character from thebreakingbadapi.com...");
             var breakingBadCharacters = breakingBadApi.GetARandomCharacter();
 
             // check whether breaking bad characters were returned from request.
@@ -79,13 +71,9 @@ namespace consoleApplication
                     // check to see if an onspring character was returned.
                     if(onspringCharacter != null)
                     {
-                        var characterFoundMessage = string.Format("Found {0} in Onspring. (record id:{1})", onspringCharacter.name, onspringCharacter.recordId);
-                        Log.Information(characterFoundMessage);
-                        Console.WriteLine(characterFoundMessage);
+                        Log.Information("Found {0} in Onspring. (record id:{1})", onspringCharacter.name, onspringCharacter.recordId);
                         Console.WriteLine();
-                        var retrievingQuoteMessage = string.Format("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
-                        Log.Information(retrievingQuoteMessage);
-                        Console.WriteLine(retrievingQuoteMessage);
+                        Log.Information("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
 
                         var breakingBadCharacterQuotes = breakingBadApi.GetQuotesByAuthor(breakingBadCharacter.name);
 
@@ -98,17 +86,13 @@ namespace consoleApplication
                         }
                         else
                         {
-                            var noQuoteFoundMessage = string.Format("No quotes found by {0}.", breakingBadCharacter.name);
-                            Log.Information(noQuoteFoundMessage);
-                            Console.WriteLine(noQuoteFoundMessage);
+                            Log.Information("No quotes found by {0}.", breakingBadCharacter.name);
                             Console.WriteLine();
                         }
                     }
                     else
                     {
-                        var noCharacterFoundMessage = string.Format("Didn't find {0} in Onspring.", breakingBadCharacter.name);
-                        Log.Information(noCharacterFoundMessage);
-                        Console.WriteLine(noCharacterFoundMessage);
+                        Log.Information("Didn't find {0} in Onspring.", breakingBadCharacter.name);
 
                         var occupationRecordIds = onspringAPI.GetOccupationsByNameOrAddOccupations(breakingBadCharacter.occupation);
                         var seasonRecordIds = onspringAPI.GetSeasonsByNameOrAddSeasons(breakingBadCharacter.appearance);
@@ -131,15 +115,10 @@ namespace consoleApplication
 
                         if(newCharacterRecordId.HasValue)
                         {
-                            var successfulCharacterAddMessage = string.Format("Added {0} in Onspring. (record id {1}) ", onspringCharacter.name, newCharacterRecordId);
-                            Log.Information(successfulCharacterAddMessage);
-                            Console.WriteLine(successfulCharacterAddMessage);
+                            Log.Information("Added {0} in Onspring. (record id {1}) ", onspringCharacter.name, newCharacterRecordId);
                             Console.WriteLine();
 
-                            var retrievingQuoteMessage = string.Format("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
-                            Log.Information(retrievingQuoteMessage);
-                            Console.WriteLine(retrievingQuoteMessage);
-
+                            Log.Information("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
                             var breakingBadCharacterQuotes = breakingBadApi.GetQuotesByAuthor(breakingBadCharacter.name);
 
                             if (breakingBadCharacterQuotes != null && breakingBadCharacterQuotes.Length > 0)
@@ -151,18 +130,13 @@ namespace consoleApplication
                             }
                             else
                             {
-                                var noQuoteFoundMessage = string.Format("No quotes found by {0}.", breakingBadCharacter.name);
-                                Log.Information(noQuoteFoundMessage);
-                                Console.WriteLine(noQuoteFoundMessage);
-                                Console.WriteLine();
+                                Log.Information("No quotes found by {0}.", breakingBadCharacter.name);
                             }
 
                         }
                         else
                         {
-                            var unsuccessfulCharacterAddMessage = string.Format("Failed to create {0} in Onspring.", breakingBadCharacter.name);
-                            Log.Information(unsuccessfulCharacterAddMessage);
-                            Console.WriteLine(unsuccessfulCharacterAddMessage);
+                            Log.Information("Failed to create {0} in Onspring.", breakingBadCharacter.name);
                         }
                     }
                 }
