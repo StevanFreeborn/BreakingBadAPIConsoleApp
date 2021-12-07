@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Configuration;
 using System.Collections.Generic;
 using Onspring.API.SDK;
 using Onspring.API.SDK.Models;
 using Onspring.API.SDK.Enums;
 using Onspring.API.SDK.Helpers;
+using Serilog;
 
 namespace consoleApplication
 {
@@ -50,7 +50,9 @@ namespace consoleApplication
                 case 1:
                     return characterMapper.LoadCharacter(records[0]);
                 default:
-                    throw new Exception("More than one character with id: " + characterId);
+                    var errorMessage = "More than one character with id: Yes " + characterId;
+                    Log.Error(errorMessage);
+                    throw new Exception(errorMessage);
             }
         }
         public List<int> GetOccupationsByNameOrAddOccupations(List<string> occupationNames)
@@ -221,7 +223,7 @@ namespace consoleApplication
         {
             if (string.IsNullOrEmpty(quote.quote_id.ToString()))
             {
-                Console.WriteLine("Could not look up or add quote {0} in Onspring.", quote.quote_id);
+                Log.Information("Could not look up or add quote {quoteId} in Onspring.", quote.quote_id);
             }
             var queryRequest = new QueryRecordsRequest
             {
@@ -235,12 +237,14 @@ namespace consoleApplication
 
             if(records.Count > 1)
             {
-                throw new ApplicationException("More than one quote with id: " + quote.quote_id);
+                var errorMessage = "More than one quote with id: " + quote.quote_id;
+                Log.Error(errorMessage);
+                throw new ApplicationException(errorMessage);
             }
             else if(records.Count > 0)
             {
                 var onspringQuote = quoteMapper.LoadQuote(records[0]);
-                Console.WriteLine("Found quote {0} in Onspring. (record id:{1})", quote.quote_id, onspringQuote.recordId);
+                Log.Information("Found quote {breakingBadQuoteQuoteId} in Onspring. (record id:{onspringQuoteRecordId})", quote.quote_id, onspringQuote.recordId);
             }
             else
             {
@@ -257,11 +261,11 @@ namespace consoleApplication
                 var newOnspringQuoteRecordId = AddNewOnspringQuote(onspringQuote);
                 if (newOnspringQuoteRecordId.HasValue)
                 {
-                    Console.WriteLine("Added quote {0} in Onspring. (record id {1}) ", onspringQuote.id, newOnspringQuoteRecordId);
+                    Log.Information("Added quote {onspringQuoteId} in Onspring. (record id {onspringQuoteRecordId}) ", onspringQuote.id, newOnspringQuoteRecordId);
                 }
                 else
                 {
-                    Console.WriteLine("Failed to create quote {0} in Onspring.", quote.quote_id);
+                    Log.Error("Failed to create quote {breakingBadQuoteQuoteId} in Onspring.", quote.quote_id);
                 }
             }
         }

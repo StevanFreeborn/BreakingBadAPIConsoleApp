@@ -14,6 +14,7 @@ namespace consoleApplication
 		[JsonProperty("birthday")]
 		public string birthday { get; set; }
 		[JsonProperty("occupation")]
+		[JsonConverter(typeof(CustomArrayConverter<string>))]
 		public List<string> occupation { get; set; }
 		[JsonProperty("img")]
 		public string img { get; set; }
