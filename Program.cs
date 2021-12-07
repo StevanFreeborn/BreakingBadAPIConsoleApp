@@ -57,7 +57,7 @@ namespace consoleApplication
 
             // load characters from thebreakingbadapi.com.
             Log.Information("Retrieving character from thebreakingbadapi.com...");
-            var breakingBadCharacters = breakingBadApi.GetACharacterById(1);
+            var breakingBadCharacters = breakingBadApi.GetARandomCharacter();
 
             // check whether breaking bad characters were returned from request.
             if (breakingBadCharacters != null && breakingBadCharacters.Length > 0)
@@ -74,10 +74,8 @@ namespace consoleApplication
                     if(onspringCharacter != null)
                     {
                         Log.Information("Found {onspringCharacterName} in Onspring. (record id:{recordId})", onspringCharacter.name, onspringCharacter.recordId);
-                        Log.Information("{@onspringCharacter}", onspringCharacter);
-                        Console.WriteLine();
+                        
                         Log.Information("Retrieving quotes by {breakingBadCharacterName} from thebreakingbadapi.com...", breakingBadCharacter.name);
-
                         var breakingBadCharacterQuotes = breakingBadApi.GetQuotesByAuthor(breakingBadCharacter.name);
 
                         if (breakingBadCharacterQuotes != null && breakingBadCharacterQuotes.Length > 0)
@@ -90,7 +88,6 @@ namespace consoleApplication
                         else
                         {
                             Log.Information("No quotes found by {breakingBadCharacterName}.", breakingBadCharacter.name);
-                            Console.WriteLine();
                         }
                     }
                     else
