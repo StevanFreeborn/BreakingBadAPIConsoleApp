@@ -53,7 +53,6 @@ namespace consoleApplication
                 Log.Error(connectionResultMessage);
                 throw new Exception(connectionResultMessage);
             }
-            Console.WriteLine();
 
             // load characters from thebreakingbadapi.com.
             Log.Information("Retrieving character from thebreakingbadapi.com...");
