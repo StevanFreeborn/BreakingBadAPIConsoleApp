@@ -40,7 +40,10 @@ namespace consoleApplication
                 FieldIds = new List<int> {},
                 DataFormat = DataFormat.Raw,
             };
+            Log.Information("GetCharacterById Request: {@queryRequest}", queryRequest);
             var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
+            Log.Information("GetCharacterById Response: {@queryResponse}", queryResponse);
+
             var records = queryResponse.Value.Items;
 
             switch (records.Count)
@@ -96,7 +99,6 @@ namespace consoleApplication
             }
             return occupationRecordIds;
         }
-
         public List<int> GetSeasonsByNameOrAddSeasons(List<string> seasonNames)
         {
             var seasonRecordIds = new List<int>();
