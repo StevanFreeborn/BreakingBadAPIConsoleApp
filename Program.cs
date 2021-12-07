@@ -62,6 +62,8 @@ namespace consoleApplication
             // check whether breaking bad characters were returned from request.
             if (breakingBadCharacters != null && breakingBadCharacters.Length > 0)
             {
+                Log.Information("{@breakingBadCharacters}",breakingBadCharacters);
+
                 // loop through the breaking bad characters returned.
                 foreach(var breakingBadCharacter in breakingBadCharacters)
                 {
@@ -71,9 +73,10 @@ namespace consoleApplication
                     // check to see if an onspring character was returned.
                     if(onspringCharacter != null)
                     {
-                        Log.Information("Found {0} in Onspring. (record id:{1})", onspringCharacter.name, onspringCharacter.recordId);
+                        Log.Information("Found {onspringCharacterName} in Onspring. (record id:{recordId})", onspringCharacter.name, onspringCharacter.recordId);
+                        Log.Information("{@onspringCharacter}", onspringCharacter);
                         Console.WriteLine();
-                        Log.Information("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
+                        Log.Information("Retrieving quotes by {breakingBadCharacterName} from thebreakingbadapi.com...", breakingBadCharacter.name);
 
                         var breakingBadCharacterQuotes = breakingBadApi.GetQuotesByAuthor(breakingBadCharacter.name);
 
@@ -86,13 +89,13 @@ namespace consoleApplication
                         }
                         else
                         {
-                            Log.Information("No quotes found by {0}.", breakingBadCharacter.name);
+                            Log.Information("No quotes found by {breakingBadCharacterName}.", breakingBadCharacter.name);
                             Console.WriteLine();
                         }
                     }
                     else
                     {
-                        Log.Information("Didn't find {0} in Onspring.", breakingBadCharacter.name);
+                        Log.Information("Didn't find {breakingBadCharacterName} in Onspring.", breakingBadCharacter.name);
 
                         var occupationRecordIds = onspringAPI.GetOccupationsByNameOrAddOccupations(breakingBadCharacter.occupation);
                         var seasonRecordIds = onspringAPI.GetSeasonsByNameOrAddSeasons(breakingBadCharacter.appearance);
@@ -115,10 +118,10 @@ namespace consoleApplication
 
                         if(newCharacterRecordId.HasValue)
                         {
-                            Log.Information("Added {0} in Onspring. (record id {1}) ", onspringCharacter.name, newCharacterRecordId);
+                            Log.Information("Added {onspringCharacterName} in Onspring. (record id {onspringCharacterRecordId}) ", onspringCharacter.name, newCharacterRecordId);
                             Console.WriteLine();
 
-                            Log.Information("Retrieving quotes by {0} from thebreakingbadapi.com...", breakingBadCharacter.name);
+                            Log.Information("Retrieving quotes by {breakingBadCharacterName} from thebreakingbadapi.com...", breakingBadCharacter.name);
                             var breakingBadCharacterQuotes = breakingBadApi.GetQuotesByAuthor(breakingBadCharacter.name);
 
                             if (breakingBadCharacterQuotes != null && breakingBadCharacterQuotes.Length > 0)
@@ -130,13 +133,13 @@ namespace consoleApplication
                             }
                             else
                             {
-                                Log.Information("No quotes found by {0}.", breakingBadCharacter.name);
+                                Log.Information("No quotes found by {breakingBadCharacterName}.", breakingBadCharacter.name);
                             }
 
                         }
                         else
                         {
-                            Log.Information("Failed to create {0} in Onspring.", breakingBadCharacter.name);
+                            Log.Information("Failed to create {breakingBadCharacterName} in Onspring.", breakingBadCharacter.name);
                         }
                     }
                 }
