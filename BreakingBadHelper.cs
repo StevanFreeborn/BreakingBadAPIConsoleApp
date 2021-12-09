@@ -62,12 +62,14 @@ namespace consoleApplication
 		}
 		public BreakingBadCharacter[] GetARandomCharacter()
 		{
+			Log.Information("Retrieving random character from thebreakingbadapi.com...");
 			var endPoint = "character/random";
 			var request = new RestRequest(endPoint);
 			Log.Debug("GetARandomCharacter Request: {@request}", request);
 			var response = _client.Get(request);
 			Log.Debug("GetARandomCharacter Response: {@response}", response);
 			var characters = JsonConvert.DeserializeObject<BreakingBadCharacter[]>(response.Content);
+			Log.Debug("retrievedBreakingBadCharacter: {@characters}", characters);
 			return characters;
 		}
 		public BreakingBadQuote[] GetQuotesByAuthor(string authorName)

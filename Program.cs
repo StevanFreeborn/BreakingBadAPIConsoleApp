@@ -55,14 +55,11 @@ namespace consoleApplication
             }
 
             // load characters from thebreakingbadapi.com.
-            Log.Information("Retrieving character from thebreakingbadapi.com...");
             var breakingBadCharacters = breakingBadApi.GetARandomCharacter();
 
             // check whether breaking bad characters were returned from request.
             if (breakingBadCharacters != null && breakingBadCharacters.Length > 0)
             {
-                Log.Debug("{@breakingBadCharacters}",breakingBadCharacters);
-
                 // loop through the breaking bad characters returned.
                 foreach(var breakingBadCharacter in breakingBadCharacters)
                 {
