@@ -40,6 +40,7 @@ namespace consoleApplication
                 FieldIds = new List<int> {},
                 DataFormat = DataFormat.Raw,
             };
+
             Log.Debug("GetCharacterById Request: {@queryRequest}", queryRequest);
             var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
             Log.Debug("GetCharacterById Response: {@queryResponse}", queryResponse);
@@ -79,7 +80,10 @@ namespace consoleApplication
                     DataFormat = DataFormat.Raw,
                 };
 
+                Log.Debug("GetOccupationsByNameOrAddOccupations Request: {@queryRequest}", queryRequest);
                 var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
+                Log.Debug("GetOccupationsByNameOrAddOccupations Response: {@queryResponse}", queryResponse);
+
                 var records = queryResponse.Value.Items;
                 if(records.Count > 0)
                 {
@@ -120,7 +124,10 @@ namespace consoleApplication
                     DataFormat = DataFormat.Raw,
                 };
 
+                Log.Debug("GetOccupationsByNameOrAddOccupations Request: {@queryRequest}", queryRequest);
                 var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
+                Log.Debug("GetOccupationsByNameOrAddOccupations Response: {@queryResponse}", queryResponse);
+
                 var records = queryResponse.Value.Items;
                 if (records.Count > 0)
                 {
@@ -168,7 +175,10 @@ namespace consoleApplication
                     DataFormat = DataFormat.Raw,
                 };
 
+                Log.Debug("GetOccupationsByNameOrAddOccupations Request: {@queryRequest}", queryRequest);
                 var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
+                Log.Debug("GetOccupationsByNameOrAddOccupations Response: {@queryResponse}", queryResponse);
+
                 var records = queryResponse.Value.Items;
                 if (records.Count > 0)
                 {
@@ -192,10 +202,14 @@ namespace consoleApplication
         {
             var statusFieldId = characterMapper.charactersStatusFieldId;
             var getFieldResponse = client.GetFieldAsync(statusFieldId);
+
+            Log.Debug("getFieldResponse: {@getFieldResponse}", getFieldResponse);
+
             var field = getFieldResponse.Result.Value;
             var statusListField = field as ListField;
             var listId = statusListField.ListId;
             Guid? statusGuidValue = null;
+
             foreach(var item in statusListField.Values)
             {
                 if(item.Name.ToLower() == status.ToLower())
@@ -217,7 +231,11 @@ namespace consoleApplication
                     NumericValue = null,
                     Color = null,
                 };
+
+                Log.Debug("saveListItemRequest: {@saveListItemRequest}", saveListItemRequest);
                 var saveListItemResponse = client.SaveListItemAsync(saveListItemRequest);
+                Log.Debug("saveListItemResponse: {@saveListItemResponse}", saveListItemResponse);
+
                 return saveListItemResponse.Result.Value.Id;
             }
         }
@@ -234,7 +252,11 @@ namespace consoleApplication
                 FieldIds = new List<int> { },
                 DataFormat = DataFormat.Raw,
             };
+
+            Log.Debug("GetQuoteByIdOrAddQuote Request: {@queryRequest}", queryRequest);
             var queryResponse = AsyncHelper.RunTask(() => client.QueryRecordsAsync(queryRequest));
+            Log.Debug("GetQuoteByIdOrAddQuote Response: {@queryResponse}", queryResponse);
+
             var records = queryResponse.Value.Items;
 
             if(records.Count > 1)
@@ -275,30 +297,35 @@ namespace consoleApplication
         {
             var record = characterMapper.GetAddEditCharacterValues(character);
             var saveResponse = client.SaveRecordAsync(record);
+            Log.Debug("AddNewOnspringCharacter saveResponse: {@saveResponse}", saveResponse);
             return saveResponse.Result.Value.Id;
         }
         public int? AddNewOnspringOccupation(OnspringOccupation occupation)
         {
             var record = occupationMapper.GetAddEditOccupationValues(occupation);
             var saveResponse = client.SaveRecordAsync(record);
+            Log.Debug("AddNewOnspringOccupation saveResponse: {@saveResponse}", saveResponse);
             return saveResponse?.Result.Value.Id;
         }
         public int? AddNewOnspringSeason(OnspringSeason season)
         {
             var record = seasonMapper.GetAddEditSeasonValues(season);
             var saveResponse = client.SaveRecordAsync(record);
+            Log.Debug("AddNewOnspringSeason saveResponse: {@saveResponse}", saveResponse);
             return saveResponse?.Result.Value.Id;
         }
         public int? AddNewOnspringCategory(OnspringCategory category)
         {
             var record = categoryMapper.GetAddEditCategoryValues(category);
             var saveResponse = client.SaveRecordAsync(record);
+            Log.Debug("AddNewOnspringCategory saveResponse: {@saveResponse}", saveResponse);
             return saveResponse?.Result.Value.Id;
         }
         public int? AddNewOnspringQuote(OnspringQuote quote)
         {
             var record = quoteMapper.GetAddEditQuoteValues(quote);
             var saveResponse = client.SaveRecordAsync(record);
+            Log.Debug("AddNewOnspringQuote saveResponse: {@saveResponse}", saveResponse);
             return saveResponse?.Result.Value.Id;
         }
     }
