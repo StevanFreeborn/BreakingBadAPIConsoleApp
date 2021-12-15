@@ -347,12 +347,16 @@ namespace consoleApplication
             {
                 file.Result.EnsureSuccessStatusCode();
                 var mediaType = file.Result.Content.Headers.ContentType.MediaType;
+                Log.Debug("Character image media type: {mediaType}", mediaType);
                 var fileExtension = string.Join("", ".", mediaType.Substring(mediaType.LastIndexOf("/")+1));
+                Log.Debug("Character image file extension: {fileExtension}", fileExtension);
                 var guid = Guid.NewGuid().ToString();
                 var fileName = string.Join("", "characterImage", guid, fileExtension);
+                Log.Debug("Character image file name: {fileName}", fileName);
                 var stream = file.Result.Content.ReadAsStreamAsync();
 
                 filePath = Path.Combine("C:\\Software Projects\\OnspringApiV2\\src\\consoleApplication\\images", fileName);
+                Log.Debug("Character image file path: {filePath}", filePath);
 
                 using (var fileStream = File.Create(filePath))
                 {
@@ -368,22 +372,23 @@ namespace consoleApplication
             request.AddParameter("FieldId", characterMapper.characterImageFieldId.ToString());
             request.AddParameter("Notes", "Adding character image");
             request.AddParameter("ModifiedDate", DateTime.UtcNow.ToString());
-            Log.Information(filePath);
             request.AddFile("File", filePath);
+            Log.Debug("AddOnspringCharacterImage Request: {@request}", request);
             IRestResponse response = client.Execute(request);
-            
+            Log.Debug("AddOnspringCharacterImage Request: {@response}", response);
+
             var json = JsonConvert.DeserializeObject<saveFileResponse>(response.Content);
+            Log.Debug("{@json}", json);
             var fileId = json.id;
 
             if(fileId.HasValue)
             {
-                Log.Information("Successfully added character image. (File Id: {fileId})", fileId);
+                Log.Information("Successfully added character's image. (file id: {fileId})", fileId);
                 return fileId;
             }
             else
             {
-                Log.Information("Unable to add character image.");
-                Log.Information("{@json}", json);
+                Log.Information("Unable to add character's image.");
                 return null;
             }
 
