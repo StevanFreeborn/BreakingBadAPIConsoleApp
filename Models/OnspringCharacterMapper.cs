@@ -18,6 +18,7 @@ namespace consoleApplication
 			charactersPotrayedFieldId = int.Parse(ConfigurationManager.AppSettings[nameof(charactersPotrayedFieldId)]);
 			characterCategoryFieldId = int.Parse(ConfigurationManager.AppSettings[nameof(characterCategoryFieldId)]);
 			characterQuotesFieldId = int.Parse(ConfigurationManager.AppSettings[nameof(characterQuotesFieldId)]);
+			characterImageFieldId = int.Parse(ConfigurationManager.AppSettings.Get(nameof(characterImageFieldId)));
 		}
 
 		public int charactersAppId { get; }
@@ -31,9 +32,10 @@ namespace consoleApplication
 		public int charactersPotrayedFieldId { get; }
 		public int characterCategoryFieldId { get; }
 		public int characterQuotesFieldId { get; }
+		public int characterImageFieldId { get; }
 
 		public OnspringCharacter LoadCharacter(ResultRecord record)
-        {
+		{
 
 			return new OnspringCharacter
 			{

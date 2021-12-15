@@ -18,10 +18,10 @@ namespace consoleApplication
 		public List<string> occupation { get; set; }
 		[JsonProperty("img")]
 		public string img { get; set; }
-        [JsonProperty("status")]
-        public string status { get; set; }
+		[JsonProperty("status")]
+		public string status { get; set; }
 		[JsonProperty("nickname")]
-        public string nickname { get; set; }
+		public string nickname { get; set; }
 		[JsonProperty("appearance")]
 		[JsonConverter(typeof(CustomArrayConverter<string>))]
 		public List<string> appearance { get; set; }

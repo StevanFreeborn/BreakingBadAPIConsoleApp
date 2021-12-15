@@ -113,6 +113,9 @@ namespace consoleApplication
                         {
                             Log.Information("Added {onspringCharacterName} in Onspring. (record id {onspringCharacterRecordId})", onspringCharacter.name, newCharacterRecordId);
 
+                            Log.Information("Adding {onspringCharacterName}'s image...", onspringCharacter.name);
+                            onspringAPI.AddOnspringCharacterImage(breakingBadCharacter.img, newCharacterRecordId);
+
                             Log.Information("Retrieving quotes by {breakingBadCharacterName} from thebreakingbadapi.com...", breakingBadCharacter.name);
                             var breakingBadCharacterQuotes = breakingBadApi.GetQuotesByAuthor(breakingBadCharacter.name);
 

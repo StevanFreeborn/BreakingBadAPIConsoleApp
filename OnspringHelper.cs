@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using Onspring.API.SDK;
 using Onspring.API.SDK.Models;
-using Onspring.API.SDK.Enums;
 using Onspring.API.SDK.Helpers;
 using Serilog;
+using RestSharp;
+using Newtonsoft.Json;
+using System.Net.Http;
 
 namespace consoleApplication
 {
@@ -27,9 +30,15 @@ namespace consoleApplication
             quoteMapper = new OnspringQuoteMapper();
         }
 
+        public class saveFileResponse
+        {
+            public int? id { get; set; }
+        }
+
+
         public OnspringCharacter GetCharacterById(string characterId)
         {
-            if(string.IsNullOrEmpty(characterId))
+            if (string.IsNullOrEmpty(characterId))
             {
                 return null;
             }
@@ -37,8 +46,8 @@ namespace consoleApplication
             {
                 AppId = characterMapper.charactersAppId,
                 Filter = $"{characterMapper.charactersIdFieldId} eq {characterId}",
-                FieldIds = new List<int> {},
-                DataFormat = DataFormat.Raw,
+                FieldIds = new List<int> { },
+                DataFormat = Onspring.API.SDK.Enums.DataFormat.Raw,
             };
 
             Log.Debug("GetCharacterById Request: {@queryRequest}", queryRequest);
@@ -77,7 +86,7 @@ namespace consoleApplication
                     AppId = occupationMapper.occupationsAppId,
                     Filter = $"{occupationMapper.occupationsNameFieldId} eq '{filterValue}'",
                     FieldIds = new List<int> { },
-                    DataFormat = DataFormat.Raw,
+                    DataFormat = Onspring.API.SDK.Enums.DataFormat.Raw,
                 };
 
                 Log.Debug("GetOccupationsByNameOrAddOccupations Request: {@queryRequest}", queryRequest);
@@ -85,7 +94,7 @@ namespace consoleApplication
                 Log.Debug("GetOccupationsByNameOrAddOccupations Response: {@queryResponse}", queryResponse);
 
                 var records = queryResponse.Value.Items;
-                if(records.Count > 0)
+                if (records.Count > 0)
                 {
                     var onspringOccupation = occupationMapper.LoadOccupation(records[0]);
                     occupationRecordIds.Add(onspringOccupation.recordId);
@@ -121,7 +130,7 @@ namespace consoleApplication
                     AppId = seasonMapper.seasonsAppId,
                     Filter = $"{seasonMapper.seasonsNameFieldId} eq '{filterValue}'",
                     FieldIds = new List<int> { },
-                    DataFormat = DataFormat.Raw,
+                    DataFormat = Onspring.API.SDK.Enums.DataFormat.Raw,
                 };
 
                 Log.Debug("GetOccupationsByNameOrAddOccupations Request: {@queryRequest}", queryRequest);
@@ -151,7 +160,7 @@ namespace consoleApplication
         {
             var splitCategories = new List<string>(categories.Split(","));
             List<string> trimmedCategories = new List<string>();
-            foreach(var category in splitCategories)
+            foreach (var category in splitCategories)
             {
                 trimmedCategories.Add(category.Trim());
             }
@@ -172,7 +181,7 @@ namespace consoleApplication
                     AppId = categoryMapper.categoriesAppId,
                     Filter = $"{categoryMapper.categoriesNameFieldId} eq '{filterValue}'",
                     FieldIds = new List<int> { },
-                    DataFormat = DataFormat.Raw,
+                    DataFormat = Onspring.API.SDK.Enums.DataFormat.Raw,
                 };
 
                 Log.Debug("GetOccupationsByNameOrAddOccupations Request: {@queryRequest}", queryRequest);
@@ -210,14 +219,14 @@ namespace consoleApplication
             var listId = statusListField.ListId;
             Guid? statusGuidValue = null;
 
-            foreach(var item in statusListField.Values)
+            foreach (var item in statusListField.Values)
             {
-                if(item.Name.ToLower() == status.ToLower())
+                if (item.Name.ToLower() == status.ToLower())
                 {
                     statusGuidValue = item.Id;
                 }
             }
-            if(statusGuidValue != null)
+            if (statusGuidValue != null)
             {
                 return statusGuidValue;
             }
@@ -250,7 +259,7 @@ namespace consoleApplication
                 AppId = quoteMapper.quotesAppId,
                 Filter = $"{quoteMapper.quotesIdFieldId} eq {quote.quote_id}",
                 FieldIds = new List<int> { },
-                DataFormat = DataFormat.Raw,
+                DataFormat = Onspring.API.SDK.Enums.DataFormat.Raw,
             };
 
             Log.Debug("GetQuoteByIdOrAddQuote Request: {@queryRequest}", queryRequest);
@@ -259,13 +268,13 @@ namespace consoleApplication
 
             var records = queryResponse.Value.Items;
 
-            if(records.Count > 1)
+            if (records.Count > 1)
             {
                 var errorMessage = "More than one quote with id: " + quote.quote_id;
                 Log.Error(errorMessage);
                 throw new ApplicationException(errorMessage);
             }
-            else if(records.Count > 0)
+            else if (records.Count > 0)
             {
                 var onspringQuote = quoteMapper.LoadQuote(records[0]);
                 Log.Information("Found quote {breakingBadQuoteQuoteId} in Onspring. (record id:{onspringQuoteRecordId})", quote.quote_id, onspringQuote.recordId);
@@ -327,6 +336,57 @@ namespace consoleApplication
             var saveResponse = client.SaveRecordAsync(record);
             Log.Debug("AddNewOnspringQuote saveResponse: {@saveResponse}", saveResponse);
             return saveResponse?.Result.Value.Id;
+        }
+        public int? AddOnspringCharacterImage(string imageUrl, int? characterRecordId)
+        {
+            var url = imageUrl;
+            string filePath = null;
+
+            using (var _client = new HttpClient())
+            using (var file = _client.GetAsync(url))
+            {
+                file.Result.EnsureSuccessStatusCode();
+                var mediaType = file.Result.Content.Headers.ContentType.MediaType;
+                var fileExtension = string.Join("", ".", mediaType.Substring(mediaType.LastIndexOf("/")+1));
+                var guid = Guid.NewGuid().ToString();
+                var fileName = string.Join("", "characterImage", guid, fileExtension);
+                var stream = file.Result.Content.ReadAsStreamAsync();
+
+                filePath = Path.Combine("C:\\Software Projects\\OnspringApiV2\\src\\consoleApplication\\images", fileName);
+
+                using (var fileStream = File.Create(filePath))
+                {
+                    stream.Result.CopyTo(fileStream);
+                }
+            }
+
+            var client = new RestClient("https://api.alpha.onspring.ist/Files");
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("x-apikey", "61546a78a65cf5787573c39a/2b02fc67-e3c4-4292-8438-201e1ecec61d");
+            request.AddHeader("x-apiversion", "2");
+            request.AddParameter("RecordId", characterRecordId.ToString());
+            request.AddParameter("FieldId", characterMapper.characterImageFieldId.ToString());
+            request.AddParameter("Notes", "Adding character image");
+            request.AddParameter("ModifiedDate", DateTime.UtcNow.ToString());
+            Log.Information(filePath);
+            request.AddFile("File", filePath);
+            IRestResponse response = client.Execute(request);
+            
+            var json = JsonConvert.DeserializeObject<saveFileResponse>(response.Content);
+            var fileId = json.id;
+
+            if(fileId.HasValue)
+            {
+                Log.Information("Successfully added character image. (File Id: {fileId})", fileId);
+                return fileId;
+            }
+            else
+            {
+                Log.Information("Unable to add character image.");
+                Log.Information("{@json}", json);
+                return null;
+            }
+
         }
     }
 }
