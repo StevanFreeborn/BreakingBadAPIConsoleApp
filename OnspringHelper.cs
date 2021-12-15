@@ -117,6 +117,8 @@ namespace consoleApplication
         }
         public List<int> GetSeasonsByNameOrAddSeasons(List<string> seasonNames)
         {
+            Log.Information("Checking if character's seasons are in Onspring...");
+
             var seasonRecordIds = new List<int>();
 
             foreach (var name in seasonNames)
@@ -144,10 +146,12 @@ namespace consoleApplication
                 if (records.Count > 0)
                 {
                     var onspringSeason = seasonMapper.LoadSeason(records[0]);
+                    Log.Information("Found season {characterSeason} in Onspring. (record id: {recordId})", name, onspringSeason.recordId);
                     seasonRecordIds.Add(onspringSeason.recordId);
                 }
                 else
                 {
+                    Log.Information("Didn't find season {characterSeason} in Onspring.", name);
                     var onspringSeason = new OnspringSeason
                     {
                         Name = name,
@@ -321,12 +325,12 @@ namespace consoleApplication
             if (newRecordId.HasValue)
             {
                 Log.Information("Added occupation {occupationName} in Onspring. (record id {occupationRecordId})", occupation.Name, newRecordId);
-                return saveResponse.Result.Value.Id;
+                return newRecordId;
             }
             else
             {
                 Log.Information("Unable to add occupation {occupationName} in Onspring.", occupation.Name);
-                return saveResponse?.Result.Value.Id;
+                return newRecordId;
             }
         }
         public int? AddNewOnspringSeason(OnspringSeason season)
@@ -334,7 +338,17 @@ namespace consoleApplication
             var record = seasonMapper.GetAddEditSeasonValues(season);
             var saveResponse = client.SaveRecordAsync(record);
             Log.Debug("AddNewOnspringSeason saveResponse: {@saveResponse}", saveResponse);
-            return saveResponse?.Result.Value.Id;
+            var newRecordId = saveResponse?.Result.Value.Id;
+            if (newRecordId.HasValue)
+            {
+                Log.Information("Added season {seasonName} in Onspring. (record id {occupationRecordId})", season.Name, newRecordId);
+                return newRecordId;
+            }
+            else
+            {
+                Log.Information("Unable to add season {seasonName} in Onspring.", season.Name);
+                return newRecordId;
+            }
         }
         public int? AddNewOnspringCategory(OnspringCategory category)
         {
@@ -396,13 +410,13 @@ namespace consoleApplication
 
             if(fileId.HasValue)
             {
-                Log.Information("Successfully added character's image. (file id: {fileId})", fileId);
+                Log.Information("Successfully added image. (file id: {fileId})", fileId);
                 return fileId;
             }
             else
             {
-                Log.Information("Unable to add character's image.");
-                return null;
+                Log.Information("Unable to add image.");
+                return fileId;
             }
 
         }
