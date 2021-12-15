@@ -70,6 +70,7 @@ namespace consoleApplication
         }
         public List<int> GetOccupationsByNameOrAddOccupations(List<string> occupationNames)
         {
+            Log.Information("Checking if character's occupations are in Onspring...");
             var occupationRecordIds = new List<int>();
 
             foreach (var name in occupationNames)
@@ -97,10 +98,12 @@ namespace consoleApplication
                 if (records.Count > 0)
                 {
                     var onspringOccupation = occupationMapper.LoadOccupation(records[0]);
+                    Log.Information("Found occupation {characterOccupation} in Onspring. (record id: {recordId}", name, onspringOccupation.recordId);
                     occupationRecordIds.Add(onspringOccupation.recordId);
                 }
                 else
                 {
+                    Log.Information("Didn't find occupation {characterOccupation} in Onspring.", name);
                     var onspringOccupation = new OnspringOccupation
                     {
                         Name = name,
@@ -314,7 +317,17 @@ namespace consoleApplication
             var record = occupationMapper.GetAddEditOccupationValues(occupation);
             var saveResponse = client.SaveRecordAsync(record);
             Log.Debug("AddNewOnspringOccupation saveResponse: {@saveResponse}", saveResponse);
-            return saveResponse?.Result.Value.Id;
+            var newRecordId = saveResponse?.Result.Value.Id;
+            if (newRecordId.HasValue)
+            {
+                Log.Information("Added occupation {occupationName} in Onspring. (record id {occupationRecordId})", occupation.Name, newRecordId);
+                return saveResponse.Result.Value.Id;
+            }
+            else
+            {
+                Log.Information("Unable to add occupation {occupationName} in Onspring.", occupation.Name);
+                return saveResponse?.Result.Value.Id;
+            }
         }
         public int? AddNewOnspringSeason(OnspringSeason season)
         {
