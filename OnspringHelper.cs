@@ -165,6 +165,8 @@ namespace consoleApplication
         }
         public List<int> GetCategoriesByNameOrAddCategories(string categories)
         {
+            Log.Information("Checking if character's categories are in Onspring...");
+
             var splitCategories = new List<string>(categories.Split(","));
             List<string> trimmedCategories = new List<string>();
             foreach (var category in splitCategories)
@@ -199,10 +201,12 @@ namespace consoleApplication
                 if (records.Count > 0)
                 {
                     var onspringCategory = categoryMapper.LoadCategory(records[0]);
+                    Log.Information("Found category {characterCategory} in Onspring. (record id: {recordId})", category, onspringCategory.recordId);
                     categoryRecordIds.Add(onspringCategory.recordId);
                 }
                 else
                 {
+                    Log.Information("Didn't find season {characterSeason} in Onspring.", category);
                     var onspringCategory = new OnspringCategory
                     {
                         Name = category,
@@ -355,7 +359,17 @@ namespace consoleApplication
             var record = categoryMapper.GetAddEditCategoryValues(category);
             var saveResponse = client.SaveRecordAsync(record);
             Log.Debug("AddNewOnspringCategory saveResponse: {@saveResponse}", saveResponse);
-            return saveResponse?.Result.Value.Id;
+            var newRecordId = saveResponse?.Result.Value.Id;
+            if (newRecordId.HasValue)
+            {
+                Log.Information("Added category {categoryName} in Onspring. (record id {categoryRecordId})", category.Name, newRecordId);
+                return newRecordId;
+            }
+            else
+            {
+                Log.Information("Unable to add category {categoryName} in Onspring.", category.Name);
+                return newRecordId;
+            }
         }
         public int? AddNewOnspringQuote(OnspringQuote quote)
         {
@@ -401,6 +415,7 @@ namespace consoleApplication
             request.AddParameter("ModifiedDate", DateTime.UtcNow.ToString());
             request.AddFile("File", filePath);
             Log.Debug("AddOnspringCharacterImage Request: {@request}", request);
+
             IRestResponse response = client.Execute(request);
             Log.Debug("AddOnspringCharacterImage Request: {@response}", response);
 
