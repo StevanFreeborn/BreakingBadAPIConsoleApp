@@ -8,6 +8,7 @@ using Serilog;
 using RestSharp;
 using Newtonsoft.Json;
 using System.Net.Http;
+using System.Configuration;
 
 namespace consoleApplication
 {
@@ -405,9 +406,10 @@ namespace consoleApplication
                 }
             }
 
-            var client = new RestClient("https://api.alpha.onspring.ist/Files");
+            var client = new RestClient("https://api.onspring.com/Files");
             var request = new RestRequest(Method.POST);
-            request.AddHeader("x-apikey", "61546a78a65cf5787573c39a/2b02fc67-e3c4-4292-8438-201e1ecec61d");
+            var apiKey = ConfigurationManager.AppSettings["apiKey"];
+            request.AddHeader("x-apikey", apiKey);
             request.AddHeader("x-apiversion", "2");
             request.AddParameter("RecordId", characterRecordId.ToString());
             request.AddParameter("FieldId", characterMapper.characterImageFieldId.ToString());
