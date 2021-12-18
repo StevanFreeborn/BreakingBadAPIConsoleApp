@@ -66,7 +66,7 @@ namespace consoleApplication
                     // get a character from onspring that has the same character id as the breaking bad character.
                     var onspringCharacter = onspringAPI.GetCharacterById(breakingBadCharacter.char_id.ToString());
 
-                    // check to see if an onspring character was returned.
+                    // check to see if an onspring character was returned and proceed accordingly.
                     if(onspringCharacter != null)
                     {
                         Log.Information("Found {onspringCharacterName} in Onspring. (record id:{recordId})", onspringCharacter.name, onspringCharacter.recordId);
